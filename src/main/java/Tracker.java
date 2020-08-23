@@ -1,11 +1,3 @@
-package nus.cs5223;
-
-import nus.cs5223.dto.GenerateServerReqDTO;
-import nus.cs5223.dto.GenerateServerResDTO;
-import nus.cs5223.dto.JoinGameReqDTO;
-import nus.cs5223.dto.JoinGameResDTO;
-import nus.cs5223.remote.TrackerRemote;
-
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;

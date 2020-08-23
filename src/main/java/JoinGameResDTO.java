@@ -1,7 +1,3 @@
-package nus.cs5223.dto;
-
-import nus.cs5223.vo.PlayerVO;
-
 import java.util.List;
 
 public class JoinGameResDTO {

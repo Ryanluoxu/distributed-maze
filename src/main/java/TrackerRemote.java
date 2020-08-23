@@ -1,9 +1,7 @@
-package nus.cs5223.remote;
-
-import nus.cs5223.dto.GenerateServerReqDTO;
-import nus.cs5223.dto.GenerateServerResDTO;
-import nus.cs5223.dto.JoinGameReqDTO;
-import nus.cs5223.dto.JoinGameResDTO;
+import GenerateServerReqDTO;
+import GenerateServerResDTO;
+import JoinGameReqDTO;
+import JoinGameResDTO;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;

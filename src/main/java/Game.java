@@ -1,7 +1,3 @@
-package nus.cs5223;
-
-import nus.cs5223.remote.TrackerRemote;
-
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;

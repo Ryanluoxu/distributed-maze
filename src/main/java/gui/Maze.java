@@ -1,11 +1,6 @@
-package nus.cs5223.gui;
+package gui;
 
 import java.awt.*;
-import java.awt.event.*;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.TimerTask;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.*;
