@@ -1,8 +1,3 @@
-import GenerateServerReqDTO;
-import GenerateServerResDTO;
-import JoinGameReqDTO;
-import JoinGameResDTO;
-
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
