@@ -2,8 +2,6 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Tracker implements TrackerRemote {
 
@@ -11,10 +9,10 @@ public class Tracker implements TrackerRemote {
      * The rmi-registry should be used only for registering and locating the tracker.
      */
     private static final String REMOTE_REF = "tracker";
-    private static int port = 0;
-    private static int N = 10;
-    private static int K = 15;
-    private static List<PlayerVO> existingPlayers = new ArrayList<>();
+    private static int port;
+    private static int N;
+    private static int K;
+    private static GameRemote serverRemoteObj;
 
     public static void main(String[] args) {
         readArgs(args);
@@ -32,15 +30,15 @@ public class Tracker implements TrackerRemote {
     }
 
     @Override
-    public JoinGameResDTO joinGame(JoinGameReqDTO request) throws RemoteException {
-        System.out.println("Tracker joinGame - request: " + request);
-        AddPlayerResult result = addPlayer(request);
-        JoinGameResDTO response = new JoinGameResDTO(existingPlayers, N, K, result.isSuccess, result.failReason);
-        System.out.println("Tracker joinGame - END - response: " + response);
+    public GameInfoResDTO getGameInfo(GameInfoReqDTO request) throws RemoteException {
+        System.out.println("Tracker getGameInfo - request: " + request);
+        GameInfoResDTO response = new GameInfoResDTO(N, K, serverRemoteObj);
+        System.out.println("Tracker getGameInfo - END - response: " + response);
         return response;
     }
 
-    private synchronized AddPlayerResult addPlayer(JoinGameReqDTO request) {
+/*
+    private synchronized AddPlayerResult addPlayer(GameInfoReqDTO request) {
         // playerId exists
         for (PlayerVO playerVO : existingPlayers) {
             if (playerVO.getPlayerId().equalsIgnoreCase(request.getPlayerId())){
@@ -62,7 +60,8 @@ public class Tracker implements TrackerRemote {
         }
         existingPlayers.add(newPlayer);
         return new AddPlayerResult(true, null);
-    }
+    }*/
+/*
 
     static class AddPlayerResult {
         private boolean isSuccess;
@@ -72,15 +71,8 @@ public class Tracker implements TrackerRemote {
             this.isSuccess = isSuccess;
             this.failReason = failReason;
         }
-
-        public boolean isSuccess() {
-            return isSuccess;
-        }
-
-        public String getFailReason() {
-            return failReason;
-        }
     }
+*/
 
     @Override
     public GenerateServerResDTO generateServer(GenerateServerReqDTO request) throws RemoteException {
@@ -102,6 +94,8 @@ public class Tracker implements TrackerRemote {
                 System.err.println("readArgs error: " + ex.getMessage());
                 exitGame(args);
             }
+        } else {
+            exitGame(args);
         }
     }
 
