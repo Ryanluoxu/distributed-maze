@@ -2,6 +2,8 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Tracker implements TrackerRemote {
 
@@ -12,7 +14,7 @@ public class Tracker implements TrackerRemote {
     private static int port;
     private static int N;
     private static int K;
-    private static GameRemote serverRemoteObj;
+    private static List<PlayerVO> players = new ArrayList<>();
 
     public static void main(String[] args) {
         readArgs(args);
@@ -32,50 +34,32 @@ public class Tracker implements TrackerRemote {
     @Override
     public GameInfoResDTO getGameInfo(GameInfoReqDTO request) throws RemoteException {
         System.out.println("Tracker getGameInfo - request: " + request);
-        GameInfoResDTO response = new GameInfoResDTO(N, K, serverRemoteObj);
+        boolean isValidPlayerId = addPlayer(request);
+        GameInfoResDTO response = new GameInfoResDTO(N, K, players, isValidPlayerId);
         System.out.println("Tracker getGameInfo - END - response: " + response);
         return response;
     }
 
-/*
-    private synchronized AddPlayerResult addPlayer(GameInfoReqDTO request) {
-        // playerId exists
-        for (PlayerVO playerVO : existingPlayers) {
-            if (playerVO.getPlayerId().equalsIgnoreCase(request.getPlayerId())){
-                return new AddPlayerResult(false, "playerId already exists..");
+    private boolean addPlayer(GameInfoReqDTO request) {
+        synchronized (players) {
+            // playerId exists
+            for (PlayerVO playerVO : players) {
+                if (playerVO.getPlayerId().equalsIgnoreCase(request.getPlayerId())) {
+                    System.err.println("playerId already exists: " + request.getPlayerId());
+                    return false;
+                }
             }
+            PlayerVO newPlayer = new PlayerVO(request);
+            players.add(newPlayer);
         }
-        PlayerVO newPlayer = new PlayerVO(request.getPlayerId());
-        switch (existingPlayers.size()) {
-            case 0:
-                newPlayer.setPrimaryServer(true);
-                newPlayer.setBackupServer(true);
-                break;
-            case 1:
-                newPlayer.setBackupServer(true);
-                existingPlayers.get(0).setBackupServer(false);
-                break;
-            default:
-                break;
-        }
-        existingPlayers.add(newPlayer);
-        return new AddPlayerResult(true, null);
-    }*/
-/*
-
-    static class AddPlayerResult {
-        private boolean isSuccess;
-        private String failReason;
-
-        public AddPlayerResult(boolean isSuccess, String failReason) {
-            this.isSuccess = isSuccess;
-            this.failReason = failReason;
-        }
+        return true;
     }
-*/
 
     @Override
-    public GenerateServerResDTO generateServer(GenerateServerReqDTO request) throws RemoteException {
+    public RemovePlayerResDTO removePlayer(RemovePlayerReqDTO request) throws RemoteException {
+        synchronized (players) {
+            players.removeIf(playerVO -> playerVO.getPlayerId().equalsIgnoreCase(request.getPlayerId()));
+        }
         return null;
     }
 

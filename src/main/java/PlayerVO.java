@@ -1,12 +1,14 @@
 public class PlayerVO {
     private String ip;
     private Integer port;
+    private GameRemote gameRemoteObj;
     private String playerId;
-    private boolean isPrimaryServer;
-    private boolean isBackupServer;
 
-    public PlayerVO(String playerId) {
-        this.playerId = playerId;
+    public PlayerVO(GameInfoReqDTO request) {
+        this.ip = request.getIp();
+        this.port = request.getPort();
+        this.gameRemoteObj = request.getGameRemoteObj();
+        this.playerId = request.getPlayerId();
     }
 
     public String getIp() {
@@ -25,6 +27,14 @@ public class PlayerVO {
         this.port = port;
     }
 
+    public GameRemote getGameRemoteObj() {
+        return gameRemoteObj;
+    }
+
+    public void setGameRemoteObj(GameRemote gameRemoteObj) {
+        this.gameRemoteObj = gameRemoteObj;
+    }
+
     public String getPlayerId() {
         return playerId;
     }
@@ -33,30 +43,13 @@ public class PlayerVO {
         this.playerId = playerId;
     }
 
-    public boolean getPrimaryServer() {
-        return isPrimaryServer;
-    }
-
-    public void setPrimaryServer(boolean primaryServer) {
-        isPrimaryServer = primaryServer;
-    }
-
-    public boolean getBackupServer() {
-        return isBackupServer;
-    }
-
-    public void setBackupServer(boolean backupServer) {
-        isBackupServer = backupServer;
-    }
-
     @Override
     public String toString() {
         return "PlayerVO{" +
                 "ip='" + ip + '\'' +
                 ", port=" + port +
+                ", gameRemoteObj=" + gameRemoteObj +
                 ", playerId='" + playerId + '\'' +
-                ", isPrimaryServer=" + isPrimaryServer +
-                ", isBackupServer=" + isBackupServer +
                 '}';
     }
 }

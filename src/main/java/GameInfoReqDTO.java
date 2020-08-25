@@ -1,25 +1,39 @@
 public class GameInfoReqDTO {
-    private String playerId;
+    private String ip;
+    private Integer port;
     private GameRemote gameRemoteObj;
+    private String playerId;
+
+    public GameInfoReqDTO(String ip, Integer port, GameRemote gameRemoteObj, String playerId) {
+        this.ip = ip;
+        this.port = port;
+        this.gameRemoteObj = gameRemoteObj;
+        this.playerId = playerId;
+    }
 
     public String getPlayerId() {
         return playerId;
     }
-    public void setPlayerId(String playerId) {
-        this.playerId = playerId;
+
+    public String getIp() {
+        return ip;
     }
+
+    public Integer getPort() {
+        return port;
+    }
+
     public GameRemote getGameRemoteObj() {
         return gameRemoteObj;
-    }
-    public void setGameRemoteObj(GameRemote gameRemoteObj) {
-        this.gameRemoteObj = gameRemoteObj;
     }
 
     @Override
     public String toString() {
         return "GameInfoReqDTO{" +
-                "playerId='" + playerId + '\'' +
+                "ip='" + ip + '\'' +
+                ", port=" + port +
                 ", gameRemoteObj=" + gameRemoteObj +
+                ", playerId='" + playerId + '\'' +
                 '}';
     }
 }

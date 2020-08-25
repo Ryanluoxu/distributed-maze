@@ -1,36 +1,32 @@
-public class GameInfoResDTO {
-    private Integer N;  // grid size
-    private Integer K;  // number of treasures
-    private GameRemote serverRemoteObj;
+import java.util.List;
 
-    public GameInfoResDTO(Integer n, Integer k, GameRemote serverRemoteObj) {
-        N = n;
-        K = k;
-        this.serverRemoteObj = serverRemoteObj;
+public class GameInfoResDTO {
+    private Integer N;
+    private Integer K;
+    private List<PlayerVO> players;
+    private boolean isValidPlayerId;
+
+    public boolean isValidPlayerId() {
+        return isValidPlayerId;
     }
 
     public Integer getN() {
         return N;
     }
 
-    public void setN(Integer n) {
-        N = n;
-    }
-
     public Integer getK() {
         return K;
     }
 
-    public void setK(Integer k) {
+    public List<PlayerVO> getPlayers() {
+        return players;
+    }
+
+    public GameInfoResDTO(Integer n, Integer k, List<PlayerVO> players, boolean isValidPlayerId) {
+        N = n;
         K = k;
-    }
-
-    public GameRemote getServerRemoteObj() {
-        return serverRemoteObj;
-    }
-
-    public void setServerRemoteObj(GameRemote serverRemoteObj) {
-        this.serverRemoteObj = serverRemoteObj;
+        this.players = players;
+        this.isValidPlayerId = isValidPlayerId;
     }
 
     @Override
@@ -38,7 +34,8 @@ public class GameInfoResDTO {
         return "GameInfoResDTO{" +
                 "N=" + N +
                 ", K=" + K +
-                ", serverRemoteObj=" + serverRemoteObj +
+                ", players=" + players +
+                ", isValidPlayerId=" + isValidPlayerId +
                 '}';
     }
 }
