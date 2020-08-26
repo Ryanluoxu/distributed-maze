@@ -3,12 +3,21 @@ public class PlayerVO {
     private Integer port;
     private GameRemote gameRemoteObj;
     private String playerId;
+    private int score;
 
     public PlayerVO(GameInfoReqDTO request) {
         this.ip = request.getIp();
         this.port = request.getPort();
         this.gameRemoteObj = request.getGameRemoteObj();
         this.playerId = request.getPlayerId();
+    }
+
+    public int getScore() {
+        return score;
+    }
+
+    public void setScore(int score) {
+        this.score = score;
     }
 
     public String getIp() {
@@ -50,6 +59,7 @@ public class PlayerVO {
                 ", port=" + port +
                 ", gameRemoteObj=" + gameRemoteObj +
                 ", playerId='" + playerId + '\'' +
+                ", score=" + score +
                 '}';
     }
 }
