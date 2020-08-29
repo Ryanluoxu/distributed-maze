@@ -14,4 +14,12 @@ public class GameStateVO {
         boolean hasTreasure;
         String playerId;
     }
+
+    public MazeVO getMazeVO(){
+        return maze;
+    }
+
+    public List<PlayerVO> getPlayerList(){
+        return playerList;
+    }
 }

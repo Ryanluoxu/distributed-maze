@@ -1,5 +1,3 @@
-package gui;
-
 import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
@@ -9,6 +7,9 @@ public class Maze extends JFrame{
     private JPanel panel;
     private JPanel leftPanel;
     private JPanel centerPanel;
+    private String[][] mazeGrid;
+    private Map<String, Integer> playerScores;
+    private Map<String, String> server;
 
     public Maze() {
         init();
@@ -25,45 +26,71 @@ public class Maze extends JFrame{
         leftPanel = new JPanel();
         centerPanel = new JPanel();
         panel.setLayout(new BorderLayout());
-
-        Map<String, Integer> player=updatePlayerStatus();
-        String[][] maze=updateMazeStatus();
-
-        displayScoreBoard(player);
-        displayMazeBoard(maze);
+        refreshBoard(gameState);
     }
 
-    public Map<String, Integer> updatePlayerStatus(){
+    //刷新全局信息
+    public void refreshBoard(GameStateVO gameState){
+        updateGameState(gameState);
+        displayBoard();
+    }
+
+    //更新全局信息，包括maze, player和server
+    public void updateGameState(GameStateVO gameState){
+        MazeVO maze = gameState.getMazeVO();
+        List<PlayerVO> playerList = gameState.getPlayerList();
+        updatePlayerStatus(playerList);
+        updateMazeStatus(maze);
+        updateServerStatus(playerList)
+    }
+
+    public void updatePlayerStatus(List<PlayerVO> playerList){
         Map<String, Integer> player = new HashMap<String, Integer>();
-        player.put("uu",1);
-        player.put("aa",3);
-        return player;
+        for(int i=0; i<playerList.length; i++){
+            player.put(playerList[i].getPlayerId(),playerList.getScore());
+        }
+        this.playerScores=player;
     }
 
-    public String[][] updateMazeStatus(){
-        String maze[][] = new String[20][20];
-        for(int i=0; i<maze.length; i++){
-            for(int j=0; j<maze[i].length; j++){
-                maze[i][j]= new String(" ");
+    public void updateMazeStatus(MazeVO maze){
+        K=maze.cells.length
+        N=maze[0].cells.length
+        String mazeGrid[][] = new String[K][N];
+        for(int i=0; i<mazeGrid.length; i++){
+            for(int j=0; j<mazeGrid[i].length; j++){
+                if(maze.cells[i][j].hasTreasure){
+                    mazeGrid[i][j]=new String("*");
+                }
+                else if(mazeGrid[i][j].playerId.equals("")){
+                    mazeGrid[i][j] = new String(" ");
+                }
+                else{
+                    mazeGrid[i][j] = new String(mazeGrid[i][j].playerId);
+                }
             }
         }
-        maze[10][10]=new String("uu");
-        maze[10][15]=new String("aa");
-        maze[11][12]=new String("*");
-        return maze;
+        this.mazeGrid=mazeGrid;
     }
 
-    public Map<String, String> updateServerStatus(){
+    public void updateServerStatus(List<PlayerVO> playerList){
         Map<String, String> server = new HashMap<String, String>();
-        server.put("Primary","uu");
-        server.put("Backup","aa");
-        return server;
+        server.put("Primary Server:", playerList[0].getPlayerId());
+        if(playerList.length>1){
+            server.put("Backup Server:", playerList[1].getPlayerId());
+        }
+        this.server=server;
     }
 
-    public void displayScoreBoard(Map<String, Integer> playerScores){
+    //展示全局信息
+    public void displayBoard(){
+        displayScoreBoard();
+        displayMazeBoard();
+    }
+
+    public void displayScoreBoard(){
         leftPanel.setLayout(new BoxLayout(leftPanel,BoxLayout.Y_AXIS));
         leftPanel.setBackground(new Color(255, 255, 255));
-        for (Map.Entry<String, Integer> entry : playerScores.entrySet()) {
+        for (Map.Entry<String, Integer> entry : this.playerScores.entrySet()) {
             StringBuilder label =new StringBuilder();
             label.append(entry.getKey());
             label.append(":");
@@ -73,12 +100,12 @@ public class Maze extends JFrame{
         panel.add(leftPanel, BorderLayout.WEST);
     }
 
-    public void displayMazeBoard(String[][] maze){
-        centerPanel.setLayout(new GridLayout(maze.length, maze[0].length, 1, 1));
+    public void displayMazeBoard(){
+        centerPanel.setLayout(new GridLayout(this.mazeGrid.length, this.mazeGrid[0].length, 1, 1));
         centerPanel.setBackground(new Color(255, 255, 255));
-        for(int row=0; row<maze.length; row++){
-            for(int col=0; col<maze[row].length; col++){
-                JLabel gridCell= new JLabel(maze[row][col],JLabel.CENTER);
+        for(int row=0; row<this.mazeGrid.length; row++){
+            for(int col=0; col<this.mazeGrid[row].length; col++){
+                JLabel gridCell= new JLabel(this.mazeGrid[row][col],JLabel.CENTER);
                 gridCell.setOpaque(true);
                 gridCell.setBackground(Color.GREEN);
                 centerPanel.add(gridCell);
