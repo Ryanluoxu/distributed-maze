@@ -3,7 +3,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
-public class Game {
+public class Game implements GameRemote {
 
     private static final String REMOTE_REF_TRACKER = "tracker";
     private static String host = "127.0.0.1";
@@ -59,4 +59,32 @@ public class Game {
         System.exit(0);
     }
 
+    /**
+     * LW
+     */
+    @Override
+    public GameStateVO joinGame(PlayerVO playerVO) throws RemoteException {
+        return null;
+    }
+
+    /**
+     * JH
+     */
+    @Override
+    public GameStateVO move(MoveReqDTO moveRequest) throws RemoteException {
+        return null;
+    }
+
+    /**
+     * LX
+     */
+    @Override
+    public void ping() throws RemoteException {
+
+    }
+
+    @Override
+    public void updateGameState(GameStateVO gameState) throws RemoteException {
+
+    }
 }

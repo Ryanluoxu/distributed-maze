@@ -7,11 +7,13 @@ public interface GameLocal {
 
     /**
      * 首位玩家 tracker.getGameInfo 之后：initGame 得到 gameState
+     * --JH
      */
     GameStateVO initGame(int N, int K, List<PlayerVO> playerList);
 
     /**
      * 通过比对 playerList 和自身的 playerId，判断当前玩家是否是 pServer 或者 bServer
+     * -- LX
      */
     boolean isPrimaryServer();
     boolean isBackupServer();
@@ -21,6 +23,7 @@ public interface GameLocal {
      * isPrimaryServer：检查其他玩家
      * isBackupServer：检查首位玩家（pServer）
      * 普通玩家跳过。
+     * -- LW
      */
     void ScheduleCheck();
 
