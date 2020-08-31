@@ -13,7 +13,7 @@ public interface GameLocal {
 
     /**
      * 通过比对 playerList 和自身的 playerId，判断当前玩家是否是 pServer 或者 bServer
-     * -- LX
+     * -- LX - done
      */
     boolean isPrimaryServer();
     boolean isBackupServer();

@@ -2,13 +2,16 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Game implements GameRemote {
 
     private static final String REMOTE_REF_TRACKER = "tracker";
-    private static String host = "127.0.0.1";
-    private static int port = 1099;
+    private static String host;
+    private static int port;
     private static String playerId;
+    private static List<PlayerVO> playerList = new ArrayList<>();
 
     public static void main(String[] args) {
         readArgs(args);
@@ -65,6 +68,8 @@ public class Game implements GameRemote {
     @Override
     public GameStateVO joinGame(PlayerVO playerVO) throws RemoteException {
         return null;
+
+        // todo: update playerList
     }
 
     /**
@@ -73,6 +78,7 @@ public class Game implements GameRemote {
     @Override
     public GameStateVO move(MoveReqDTO moveRequest) throws RemoteException {
         return null;
+        // todo: update playerList
     }
 
     /**
@@ -80,11 +86,32 @@ public class Game implements GameRemote {
      */
     @Override
     public void ping() throws RemoteException {
-
+        System.out.println("successful ping -> player:" + playerId + "@" + host + ":" + port);
     }
 
     @Override
     public void updateGameState(GameStateVO gameState) throws RemoteException {
-
+        // todo: update playerList
     }
+
+    /**
+     * 通过比对 playerList 和自身的 playerId，判断当前玩家是否是 pServer
+     */
+    private static boolean isPrimaryServer() {
+        if (playerList.size() > 0 && playerList.get(0).getPlayerId().equalsIgnoreCase(playerId)) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * 通过比对 playerList 和自身的 playerId，判断当前玩家是否是 bServer
+     */
+    private static boolean isBackupServer() {
+        if (playerList.size() > 1 && playerList.get(1).getPlayerId().equalsIgnoreCase(playerId)) {
+            return true;
+        }
+        return false;
+    }
+
 }
