@@ -12,6 +12,7 @@ public class Game implements GameRemote {
     private static int port;
     private static String playerId;
     private static List<PlayerVO> playerList = new ArrayList<>();
+    private static GameStateVO gamestate;
 
     public static void main(String[] args) {
         readArgs(args);
@@ -67,8 +68,9 @@ public class Game implements GameRemote {
      */
     @Override
     public GameStateVO joinGame(PlayerVO playerVO) throws RemoteException {
-        return null;
-
+        playerList.add(playerVO);
+        gameState.addPlayer(playerVO);
+        return gameState;
         // todo: update playerList
     }
 
