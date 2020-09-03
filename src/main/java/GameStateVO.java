@@ -35,8 +35,12 @@ public class GameStateVO {
         }
     }
 
-    public MazeVO getMazeVO(){
-        return maze;
+    public boolean isTreasure(int x, int y){
+        return maze.cells[x][y].hasTreasure;
+    }
+
+    public String isPlayer(int x, int y){
+        return maze.cells[x][y].playerId;
     }
 
     public List<PlayerVO> getPlayerList(){
