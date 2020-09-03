@@ -13,6 +13,13 @@ public class GameStateVO {
         N=n;
         maze = new MazeVO();
         maze.cells = new CellVO[n][n];
+        
+        for(int i=0;i<n;i++){
+            for(int j=0; j<n;j++){
+                maze.cells[i][j]=new CellVO();
+            }
+        }
+
         for(int i=0; i<K; i++){
             placeCells("*");
         }
@@ -28,8 +35,6 @@ public class GameStateVO {
         boolean hasTreasure;
         String playerId;
         public CellVO(Integer X, Integer Y){
-            x=X;
-            y=Y;
             hasTreasure=false;
             playerId="";
         }
