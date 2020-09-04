@@ -14,6 +14,7 @@ public class Maze extends JFrame{
     private String[][] mazeGrid;
     private Map<String, Integer> playerScores;
     private Map<String, String> server;
+    private LocalScanner lScanner;
 
     public Maze() throws Exception{
         init();
@@ -30,6 +31,7 @@ public class Maze extends JFrame{
         leftPanel = new JPanel();
         centerPanel = new JPanel();
         panel.setLayout(new BorderLayout());
+        lScanner = new LocalScanner();
     }
 
     //刷新全局信息
