@@ -12,7 +12,7 @@ public class Game implements GameRemote {
     private static int port;
     private static String playerId;
     private static List<PlayerVO> playerList = new ArrayList<>();
-    private static GameStateVO gamestate;
+    private static GameStateVO gameState;
 
     public static void main(String[] args) {
         readArgs(args);
@@ -61,6 +61,10 @@ public class Game implements GameRemote {
     private static void exitGame(String[] args) {
         System.err.println("invalid args: " + args);
         System.exit(0);
+    }
+
+    public void initGame(int N, int K, List<PlayerVO> playerList){
+        gameState=new GameStateVO(N,K,playerList);
     }
 
     /**
@@ -116,4 +120,17 @@ public class Game implements GameRemote {
         return false;
     }
 
+    /**
+     * primary ping 其它所有player，backup ping primary，具体处理未知
+     */
+    private static boolean ScheduleCheck() {
+        if(isPrimaryServer()){
+            for(int i=1; i<playerList.size(); i++){
+                ping();
+            }
+        }
+        else if (isBackupServer()){
+            ping();
+        }
+    }
 }

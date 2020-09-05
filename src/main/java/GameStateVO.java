@@ -8,12 +8,13 @@ public class GameStateVO {
     private Integer K;
     private Random rand = new Random();
 
-    public GameStateVO(Integer n, Integer k){
+    public GameStateVO(Integer n, Integer k, List<PlayerVO> playerList){
         K=k;
         N=n;
+        this.playerList=playerList;
         maze = new MazeVO();
         maze.cells = new CellVO[n][n];
-        
+
         for(int i=0;i<n;i++){
             for(int j=0; j<n;j++){
                 maze.cells[i][j]=new CellVO();
