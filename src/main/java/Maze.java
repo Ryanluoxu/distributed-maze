@@ -129,7 +129,9 @@ public class Maze extends JFrame{
 
     public static void main(String args[]) throws Exception{
         Maze maze = new Maze();
-        GameStateVO gameState = new GameStateVO(15,10);
+        //todo: read from args
+        List<PlayerVO> playerList = null;
+        GameStateVO gameState = new GameStateVO(15,10, playerList);
         maze.refreshBoard(gameState);
         for(int i=0;i<10;i++){
             TimeUnit.SECONDS.sleep(1);

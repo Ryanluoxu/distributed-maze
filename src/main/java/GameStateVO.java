@@ -17,7 +17,7 @@ public class GameStateVO {
 
         for(int i=0;i<n;i++){
             for(int j=0; j<n;j++){
-                maze.cells[i][j]=new CellVO();
+                maze.cells[i][j]=new CellVO(i,j);
             }
         }
 
@@ -57,6 +57,17 @@ public class GameStateVO {
         //添加player并随机安排位置
         playerList.add(player);
         placeCells(player.getPlayerId());
+    }
+
+    /**
+     * Remove the player when the player exits the game.
+     */
+    public void removePlayer(PlayerVO player) {
+        playerList.remove(player);
+
+        //todo: update maze
+
+        //todo: all other players delete the player from list?
     }
 
     public void placeCells(String cell){
