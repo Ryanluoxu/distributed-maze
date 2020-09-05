@@ -133,7 +133,7 @@ public class Maze extends JFrame{
         List<PlayerVO> playerList = null;
         GameStateVO gameState = new GameStateVO(15,10, playerList);
         maze.refreshBoard(gameState);
-        for(int i=0;i<10;i++){
+        for(int i=0; i<10; i++){
             TimeUnit.SECONDS.sleep(1);
             maze.clearPanel();
             gameState.placeCells("*");

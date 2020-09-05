@@ -49,6 +49,10 @@ public class GameStateVO {
         return maze.cells[x][y].playerId;
     }
 
+    public Integer getSize(){
+        return N;
+    }
+
     public List<PlayerVO> getPlayerList(){
         return playerList;
     }
