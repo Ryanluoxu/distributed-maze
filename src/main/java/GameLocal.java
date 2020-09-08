@@ -7,7 +7,7 @@ public interface GameLocal {
 
     /**
      * 首位玩家 tracker.getGameInfo 之后：initGame 得到 gameState
-     * --JH
+     * --LW - done
      */
     GameStateVO initGame(int N, int K, List<PlayerVO> playerList);
 
@@ -23,7 +23,7 @@ public interface GameLocal {
      * isPrimaryServer：检查其他玩家
      * isBackupServer：检查首位玩家（pServer）
      * 普通玩家跳过。
-     * -- LW
+     * -- lX - done
      */
     void ScheduleCheck();
 

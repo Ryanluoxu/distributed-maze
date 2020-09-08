@@ -41,6 +41,7 @@ public class Tracker implements TrackerRemote {
     }
 
     private boolean addPlayer(GameInfoReqDTO request) {
+        // todo validate number of players
         synchronized (players) {
             // playerId exists
             for (PlayerVO playerVO : players) {
@@ -56,9 +57,9 @@ public class Tracker implements TrackerRemote {
     }
 
     @Override
-    public RemovePlayerResDTO removePlayer(RemovePlayerReqDTO request) throws RemoteException {
+    public RemovePlayerResDTO removePlayer(PlayerVO playerVO) throws RemoteException {
         synchronized (players) {
-            players.removeIf(playerVO -> playerVO.getPlayerId().equalsIgnoreCase(request.getPlayerId()));
+            players.removeIf(player -> player.getPlayerId().equalsIgnoreCase(playerVO.getPlayerId()));
         }
         return null;
     }

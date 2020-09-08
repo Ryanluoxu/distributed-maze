@@ -3,7 +3,7 @@ import java.util.List;
 public class GameInfoResDTO {
     private Integer N;
     private Integer K;
-    private List<PlayerVO> players;
+    private List<PlayerVO> playerList;
     private boolean isValidPlayerId;
 
     public boolean isValidPlayerId() {
@@ -18,14 +18,14 @@ public class GameInfoResDTO {
         return K;
     }
 
-    public List<PlayerVO> getPlayers() {
-        return players;
+    public List<PlayerVO> getPlayerList() {
+        return playerList;
     }
 
     public GameInfoResDTO(Integer n, Integer k, List<PlayerVO> players, boolean isValidPlayerId) {
         N = n;
         K = k;
-        this.players = players;
+        this.playerList = players;
         this.isValidPlayerId = isValidPlayerId;
     }
 
@@ -34,7 +34,7 @@ public class GameInfoResDTO {
         return "GameInfoResDTO{" +
                 "N=" + N +
                 ", K=" + K +
-                ", players=" + players +
+                ", players=" + playerList +
                 ", isValidPlayerId=" + isValidPlayerId +
                 '}';
     }
