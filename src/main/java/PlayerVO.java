@@ -12,6 +12,11 @@ public class PlayerVO {
         this.playerId = request.getPlayerId();
     }
 
+    public PlayerVO(String playerId, Integer score){
+        this.playerId=playerId;
+        this.score=score;
+    }
+
     public int getScore() {
         return score;
     }
