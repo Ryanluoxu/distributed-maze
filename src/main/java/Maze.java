@@ -2,7 +2,7 @@ import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
-
+import java.util.ArrayList;
 import javax.management.monitor.StringMonitor;
 import javax.swing.*;
 import java.util.concurrent.TimeUnit;
@@ -15,15 +15,17 @@ public class Maze extends JFrame{
     private Map<String, Integer> playerScores;
     private Map<String, String> server;
     private LocalScanner lScanner;
+    private String localPlayerId;
 
-    public Maze() throws Exception{
+    public Maze(String Id) throws Exception{
+        localPlayerId = Id;
         init();
-        this.setTitle("maze");
+        this.setTitle(localPlayerId);
         this.add(panel);
-        this.setPreferredSize(new Dimension(800, 800));
+        this.setPreferredSize(new Dimension(900, 800));
         this.pack(); // 不加pack就只剩标题栏了
-        this.setVisible(true);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // 用户单击窗口的关闭按钮时程序执行的操作
+        this.setVisible(true);
     }
 
     public void init() throws Exception{
@@ -43,9 +45,9 @@ public class Maze extends JFrame{
     //更新全局信息，包括maze, player和server
     public void updateGameState(GameStateVO gameState){
         List<PlayerVO> playerList = gameState.getPlayerList();
-        //updatePlayerStatus(playerList);
+        updatePlayerStatus(playerList);
         updateMazeStatus(gameState);
-        //updateServerStatus(playerList);
+        updateServerStatus(playerList);
     }
 
     public void updatePlayerStatus(List<PlayerVO> playerList){
@@ -70,6 +72,7 @@ public class Maze extends JFrame{
                 }
                 else{
                     mazeGrid[i][j] = playerId;
+                    System.out.println(playerId);
                 }
             }
         }
@@ -87,13 +90,20 @@ public class Maze extends JFrame{
 
     //展示全局信息
     public void displayBoard(){
-        //displayScoreBoard();
+        displayLeftBoard();
         displayMazeBoard();
+        System.out.println("done");
+    }
+
+    public void displayLeftBoard(){
+        leftPanel.setLayout(new BoxLayout(leftPanel,BoxLayout.Y_AXIS));
+        leftPanel.setBackground(new Color(255, 255, 255));
+        displayScoreBoard();
+        displayServerBoard();
+        panel.add(leftPanel, BorderLayout.WEST);
     }
 
     public void displayScoreBoard(){
-        leftPanel.setLayout(new BoxLayout(leftPanel,BoxLayout.Y_AXIS));
-        leftPanel.setBackground(new Color(255, 255, 255));
         for (Map.Entry<String, Integer> entry : this.playerScores.entrySet()) {
             StringBuilder label =new StringBuilder();
             label.append(entry.getKey());
@@ -101,7 +111,16 @@ public class Maze extends JFrame{
             label.append(String.valueOf(entry.getValue()));
             leftPanel.add(new JLabel(label.toString(),JLabel.CENTER));
         }
-        panel.add(leftPanel, BorderLayout.WEST);
+    }
+
+    public void displayServerBoard(){
+        for (Map.Entry<String, String> entry : this.server.entrySet()) {
+            StringBuilder label =new StringBuilder();
+            label.append(entry.getKey());
+            label.append(":");
+            label.append(entry.getValue());
+            leftPanel.add(new JLabel(label.toString(),JLabel.CENTER));
+        }
     }
 
     public void displayMazeBoard(){
@@ -111,7 +130,11 @@ public class Maze extends JFrame{
             for(int col=0; col<this.mazeGrid[row].length; col++){
                 JLabel gridCell= new JLabel(this.mazeGrid[row][col],JLabel.CENTER);
                 gridCell.setOpaque(true);
-                gridCell.setBackground(Color.GREEN);
+                //highlight the local player
+                if(this.mazeGrid[row][col].equalsIgnoreCase(localPlayerId))
+                    gridCell.setBackground(Color.RED);
+                else
+                    gridCell.setBackground(Color.GREEN);
                 centerPanel.add(gridCell);
             }
         }
@@ -128,18 +151,16 @@ public class Maze extends JFrame{
     }
 
     public static void main(String args[]) throws Exception{
-        Maze maze = new Maze();
-        //todo: read from args
-        List<PlayerVO> playerList = null;
+        Maze maze = new Maze("uu");
+        List<PlayerVO> playerList = new ArrayList<>();
+        playerList.add(new PlayerVO("uu", 3));
+        playerList.add(new PlayerVO("kk", 2));
+        playerList.add(new PlayerVO("mm", 1));
         GameStateVO gameState = new GameStateVO(15,10, playerList);
+        gameState.placeCells("uu");
+        gameState.placeCells("kk");
+        gameState.placeCells("mm");
         maze.refreshBoard(gameState);
-        for(int i=0; i<10; i++){
-            TimeUnit.SECONDS.sleep(1);
-            maze.clearPanel();
-            gameState.placeCells("*");
-            maze.refreshBoard(gameState);
-            maze.paintPanel();
-            maze.setVisible(true);
-        }
+        maze.setVisible(true);
     }
 }
