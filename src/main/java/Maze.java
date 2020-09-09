@@ -38,8 +38,11 @@ public class Maze extends JFrame{
 
     //刷新全局信息
     public void refreshBoard(GameStateVO gameState){
+        clearPanel();
         updateGameState(gameState);
         displayBoard();
+        paintPanel();
+        this.setVisible(true);
     }
 
     //更新全局信息，包括maze, player和server
@@ -72,7 +75,6 @@ public class Maze extends JFrame{
                 }
                 else{
                     mazeGrid[i][j] = playerId;
-                    System.out.println(playerId);
                 }
             }
         }
@@ -143,9 +145,12 @@ public class Maze extends JFrame{
 
     public void clearPanel(){
         centerPanel.removeAll();
+        leftPanel.removeAll();
     }
 
     public void paintPanel(){
+        leftPanel.repaint();
+        leftPanel.revalidate();
         centerPanel.repaint();
         centerPanel.revalidate();
     }
@@ -153,6 +158,7 @@ public class Maze extends JFrame{
     public static void main(String args[]) throws Exception{
         Maze maze = new Maze("uu");
         List<PlayerVO> playerList = new ArrayList<>();
+        LocalScanner scanner= new LocalScanner();
         playerList.add(new PlayerVO("uu", 3));
         playerList.add(new PlayerVO("kk", 2));
         playerList.add(new PlayerVO("mm", 1));
@@ -161,6 +167,5 @@ public class Maze extends JFrame{
         gameState.placeCells("kk");
         gameState.placeCells("mm");
         maze.refreshBoard(gameState);
-        maze.setVisible(true);
     }
 }
