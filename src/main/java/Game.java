@@ -46,6 +46,17 @@ public class Game implements GameRemote {
 
     }
 
+    private static void sendMoveRequest(List<PlayerVO> playerList, MoveReqDTO moveReqDTO) {
+        while (true) {
+            try {
+                gameState = playerList.get(0).getGameRemoteObj().move(moveReqDTO);
+                break;
+            } catch (Exception ex) {
+                playerList.remove(0);
+            }
+        }
+    }
+
     /**
      * set gameState
      */
