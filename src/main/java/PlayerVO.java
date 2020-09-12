@@ -5,6 +5,14 @@ public class PlayerVO {
     private String playerId;
     private int score;
 
+    public PlayerVO(String ip, Integer port, GameRemote gameRemoteObj, String playerId, int score) {
+        this.ip = ip;
+        this.port = port;
+        this.gameRemoteObj = gameRemoteObj;
+        this.playerId = playerId;
+        this.score = score;
+    }
+
     public PlayerVO(GameInfoReqDTO request) {
         this.ip = request.getIp();
         this.port = request.getPort();

@@ -31,15 +31,35 @@ public class Game implements GameRemote {
             if (gameInfoRes.getPlayerList().size() == 1) {  // 1st player -> pServer: init game
                 initGame(gameInfoRes.getN(), gameInfoRes.getK(), gameInfoRes.getPlayerList());
             } else {    // joinGame
-                // todo call joinGame one by one
+                // todo call joinGame one by one - LX
+                PlayerVO player = new PlayerVO(host, port, gameRemoteObj, playerId, 0);
+                joinGame(gameInfoRes.getPlayerList(), player);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
 
+        // todo player move -- LW
+        // special case: bServer fail to call pServer.move
+
         doScheduledPing();
 
     }
+
+    /**
+     * set gameState
+     */
+    private static void joinGame(List<PlayerVO> playerList, PlayerVO player) {
+        while (true) {
+            try {
+                gameState = playerList.get(0).getGameRemoteObj().joinGame(player);
+                break;
+            } catch (Exception ex) {
+                playerList.remove(0);
+            }
+        }
+    }
+
 
     private static void doScheduledPing() {
         Runnable pingTask = new Runnable() {
@@ -141,7 +161,7 @@ public class Game implements GameRemote {
 
     /**
      * JH
-     *
+     * <p>
      * The player moves and refreshes its local state.
      * If it is primary server, inform backup server latest game state.
      * return latest game state to this Game.
@@ -152,22 +172,22 @@ public class Game implements GameRemote {
         String playerId = moveRequest.getPlayerId();
 
         // the player exits the game on its own initiative
+        // todo synchronized
         if (move == 9) {
             System.out.println("Player " + playerId + " quit the game.");
-            for (PlayerVO player: gameState.getPlayerList()){
+            for (PlayerVO player : gameState.getPlayerList()) {
                 if (player.getPlayerId().equalsIgnoreCase(playerId)) {
                     gameState.movePlayer(player, move);
                     gameState.removePlayer(player);
                 }
             }
-            return gameState;
         }
         // the player moves S/N/E/W or remain its position, then refresh its local state
-        else if (move==0 || move==1 || move==2 || move==3 || move==4) {
-            for (PlayerVO player: gameState.getPlayerList()){
+        else if (move == 0 || move == 1 || move == 2 || move == 3 || move == 4) {
+            for (PlayerVO player : gameState.getPlayerList()) {
                 if (player.getPlayerId().equalsIgnoreCase(playerId)) {
                     boolean score = gameState.movePlayer(player, move);
-                    if (score==true) {
+                    if (score == true) {
                         // todo: add 1 score to player
                     }
                 }
@@ -175,26 +195,24 @@ public class Game implements GameRemote {
         }
         // Unknown move
         else {
-            System.err.println("Player "+playerId+" unknown move " + move);
+            System.err.println("Player " + playerId + " unknown move " + move);
             return gameState;
         }
 
-        // Refresh player's local state
-        // todo: Update pServer's game state
-        for (PlayerVO player: gameState.getPlayerList()){
+        for (PlayerVO player : gameState.getPlayerList()) {
             if (player.getPlayerId().equalsIgnoreCase(playerId)) {
                 player.getGameRemoteObj().updateGameState(gameState);
             }
         }
 
         // If player is the primary server, it should inform the backup server update to the latest game state
-        if (isPrimaryServer()==true) {
-            if (gameState.getPlayerList().size() > 1) {
-                gameState.getPlayerList().get(1).getGameRemoteObj().updateGameState(gameState);
-            }
+        if (gameState.getPlayerList().size() > 1) {
+            gameState.getPlayerList().get(1).getGameRemoteObj().updateGameState(gameState);
         }
 
         // return latest game state to Game
+        // todo inform bServer and tracker (only for 9)
+
         return gameState;
     }
 
