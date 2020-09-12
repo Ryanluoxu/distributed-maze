@@ -46,6 +46,7 @@ public class Game implements GameRemote {
 
     }
 
+    // todo: playerList synchronized
     private static void sendMoveRequest(MoveReqDTO moveReqDTO) {
         while (true) {
             try {
@@ -221,6 +222,7 @@ public class Game implements GameRemote {
         }
 
         // If player is the primary server, it should inform the backup server update to the latest game state
+        //todo: pserver fails to call bserver.getGameRemoteObj
         if (gameState.getPlayerList().size() > 1) {
             gameState.getPlayerList().get(1).getGameRemoteObj().updateGameState(gameState);
         }
