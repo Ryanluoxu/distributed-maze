@@ -1,4 +1,5 @@
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 public class GameStateVO {
@@ -25,6 +26,7 @@ public class GameStateVO {
             placeCells("*");
         }
     }
+
 
     static class MazeVO {
         CellVO[][] cells;
@@ -67,11 +69,24 @@ public class GameStateVO {
      * Remove the player when the player exits the game.
      */
     public void removePlayer(PlayerVO player) {
+        String playerId = player.getPlayerId();
+        int x = 0;
+        int y = 0;
+
+        // find original position
+        for (int i=0; i<N; i++) {
+            for (int j=0; j<N; j++) {
+                if (maze.cells[i][j].playerId.equalsIgnoreCase(playerId)) {
+                    x = i;
+                    y = j;
+                }
+            }
+        }
+
+        maze.cells[x][y].playerId = "";
         playerList.remove(player);
 
-        //todo: update maze
-
-        //todo: all other players delete the player from list?
+        System.out.println("player "+playerId+" removed.");
     }
 
     public void placeCells(String cell){
@@ -91,7 +106,9 @@ public class GameStateVO {
         }
     }
 
+
     /**
+     *  JH
      *  move player
      *    4
      *   1 3
@@ -103,7 +120,7 @@ public class GameStateVO {
         int x = 0;
         int y = 0;
 
-        // find current position
+        // find original position
         for (int i=0; i<N; i++) {
             for (int j=0; j<N; j++) {
                 if (maze.cells[i][j].playerId.equalsIgnoreCase(playerId)) {
@@ -112,6 +129,8 @@ public class GameStateVO {
                 }
             }
         }
+        int oldX = x;
+        int oldY = y;
 
         // calculate new position
         switch (move){
@@ -136,17 +155,21 @@ public class GameStateVO {
 
         // Update player's position
         if (maze.cells[x][y].playerId!="") {
-            return false;
+            System.out.println("Player " + player.getPlayerId() + " invalid move. Result: unmoved.");
         }
         else if (maze.cells[x][y].hasTreasure==false) {
+            maze.cells[oldX][oldY].playerId = "";
             maze.cells[x][y].playerId = playerId;
-            return true;
         }
         else if (maze.cells[x][y].hasTreasure==true) {
+            maze.cells[oldX][oldY].playerId = "";
             maze.cells[x][y].playerId = playerId;
 
-            // Place new treasure
+            // Treasure be eaten
+            maze.cells[x][y].hasTreasure = false;
+            // Place a new treasure
             placeCells("*");
+            System.out.println("Generated a new treasure randomly.");
             return true;
         }
 

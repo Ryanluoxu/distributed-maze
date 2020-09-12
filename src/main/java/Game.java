@@ -141,6 +141,10 @@ public class Game implements GameRemote {
 
     /**
      * JH
+     *
+     * The player moves and refreshes its local state.
+     * If it is primary server, inform backup server latest game state.
+     * return latest game state to this Game.
      */
     @Override
     public GameStateVO move(MoveReqDTO moveRequest) throws RemoteException {
@@ -152,6 +156,7 @@ public class Game implements GameRemote {
             System.out.println("Player " + playerId + " quit the game.");
             for (PlayerVO player: gameState.getPlayerList()){
                 if (player.getPlayerId().equalsIgnoreCase(playerId)) {
+                    gameState.movePlayer(player, move);
                     gameState.removePlayer(player);
                 }
             }
@@ -161,28 +166,35 @@ public class Game implements GameRemote {
         else if (move==0 || move==1 || move==2 || move==3 || move==4) {
             for (PlayerVO player: gameState.getPlayerList()){
                 if (player.getPlayerId().equalsIgnoreCase(playerId)) {
-                    gameState.movePlayer(player, move);
+                    boolean score = gameState.movePlayer(player, move);
+                    if (score==true) {
+                        // todo: add 1 score to player
+                    }
                 }
             }
         }
-        // Invalid move
+        // Unknown move
         else {
-            System.err.println("Player "+playerId+" invalid move " + move);
-            return null;
+            System.err.println("Player "+playerId+" unknown move " + move);
+            return gameState;
         }
 
-        //update game state
-
-        // If player is pServer
-        if (isPrimaryServer()==true) {
-
-            if (gameState.getPlayerList().size() > 1) {
-                PlayerVO bServer = gameState.getPlayerList().get(1);
+        // Refresh player's local state
+        // todo: Update pServer's game state
+        for (PlayerVO player: gameState.getPlayerList()){
+            if (player.getPlayerId().equalsIgnoreCase(playerId)) {
+                player.getGameRemoteObj().updateGameState(gameState);
             }
-            //todo: inform bServer
         }
 
+        // If player is the primary server, it should inform the backup server update to the latest game state
+        if (isPrimaryServer()==true) {
+            if (gameState.getPlayerList().size() > 1) {
+                gameState.getPlayerList().get(1).getGameRemoteObj().updateGameState(gameState);
+            }
+        }
 
+        // return latest game state to Game
         return gameState;
     }
 
