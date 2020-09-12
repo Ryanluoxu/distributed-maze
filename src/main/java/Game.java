@@ -144,7 +144,46 @@ public class Game implements GameRemote {
      */
     @Override
     public GameStateVO move(MoveReqDTO moveRequest) throws RemoteException {
-        return null;
+        Integer move = moveRequest.getKeyboardInput();
+        String playerId = moveRequest.getPlayerId();
+
+        // the player exits the game on its own initiative
+        if (move == 9) {
+            System.out.println("Player " + playerId + " quit the game.");
+            for (PlayerVO player: gameState.getPlayerList()){
+                if (player.getPlayerId().equalsIgnoreCase(playerId)) {
+                    gameState.removePlayer(player);
+                }
+            }
+            return gameState;
+        }
+        // the player moves S/N/E/W or remain its position, then refresh its local state
+        else if (move==0 || move==1 || move==2 || move==3 || move==4) {
+            for (PlayerVO player: gameState.getPlayerList()){
+                if (player.getPlayerId().equalsIgnoreCase(playerId)) {
+                    gameState.movePlayer(player, move);
+                }
+            }
+        }
+        // Invalid move
+        else {
+            System.err.println("Player "+playerId+" invalid move " + move);
+            return null;
+        }
+
+        //update game state
+
+        // If player is pServer
+        if (isPrimaryServer()==true) {
+
+            if (gameState.getPlayerList().size() > 1) {
+                PlayerVO bServer = gameState.getPlayerList().get(1);
+            }
+            //todo: inform bServer
+        }
+
+
+        return gameState;
     }
 
     /**

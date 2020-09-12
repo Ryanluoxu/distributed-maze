@@ -1,14 +1,14 @@
 import java.util.HashMap;
 public class MoveReqDTO {
     private String playerId;
-    private Integer move;
+    private Integer keyboardInput;
 
     public String getPlayerId() {
         return playerId;
     }
 
-    public Integer getMove() {
-        return move;
+    public Integer getKeyboardInput() {
+        return keyboardInput;
     }
 
     public String toString() {
@@ -22,7 +22,7 @@ public class MoveReqDTO {
 
         return "MoveReqDTO{" +
                 "playerId='" + playerId +
-                ", move=" + moveDir.get(move) +
+                ", move=" + moveDir.get(keyboardInput) +
                 '}';
     }
 }
