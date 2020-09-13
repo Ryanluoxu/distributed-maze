@@ -46,18 +46,13 @@ public class Game implements GameRemote {
 
     }
 
-    // todo: playerList synchronized
-    private static void sendMoveRequest(MoveReqDTO moveReqDTO) {
-        while (true) {
+    private static void sendMoveRequest(List<PlayerVO> playerList, MoveReqDTO moveReqDTO) {
+        for(int i =0; i<playerList.size(); i++) {
             try {
-                synchronized (gameState) {
-                    gameState = gameState.getPlayerList().get(0).getGameRemoteObj().move(moveReqDTO);
-                }
+                gameState = playerList.get(i).getGameRemoteObj().move(moveReqDTO);
                 break;
             } catch (Exception ex) {
-                synchronized (gameState) {
-                    gameState.getPlayerList().remove(0);
-                }
+                continue;
             }
         }
     }
