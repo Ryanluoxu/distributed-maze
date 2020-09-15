@@ -1,6 +1,8 @@
+import java.io.Serializable;
 import java.util.List;
+import java.io.Serializable;
 
-public class GameInfoResDTO {
+public class GameInfoResDTO implements Serializable{
     private Integer N;
     private Integer K;
     private List<PlayerVO> playerList;

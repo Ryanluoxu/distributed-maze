@@ -1,7 +1,14 @@
+import java.io.Serializable;
 import java.util.HashMap;
-public class MoveReqDTO {
+import java.io.Serializable;
+public class MoveReqDTO implements Serializable{
     private String playerId;
     private Integer keyboardInput;
+
+    public MoveReqDTO(String playerId, Integer keyboardInput){
+        this.playerId=playerId;
+        this.keyboardInput=keyboardInput;   
+    }
 
     public String getPlayerId() {
         return playerId;

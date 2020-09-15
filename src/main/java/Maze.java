@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.ArrayList;
 import javax.management.monitor.StringMonitor;
 import javax.swing.*;
+import javax.swing.plaf.synth.SynthEditorPaneUI;
+
 import java.util.concurrent.TimeUnit;
 @SuppressWarnings("serial")
 public class Maze extends JFrame{
@@ -62,6 +64,7 @@ public class Maze extends JFrame{
     }
 
     public void updateMazeStatus(GameStateVO gameState){
+        StringBuffer s= new StringBuffer();
         int N=gameState.getSize();
         String mazeGrid[][] = new String[N][N];
         for(int i=0; i<mazeGrid.length; i++){
@@ -76,8 +79,11 @@ public class Maze extends JFrame{
                 else{
                     mazeGrid[i][j] = playerId;
                 }
+                s.append(mazeGrid[i][j]);
             }
+            s.append("\n");
         }
+        System.out.println(s.toString());
         this.mazeGrid=mazeGrid;
     }
 
@@ -94,7 +100,6 @@ public class Maze extends JFrame{
     public void displayBoard(){
         displayLeftBoard();
         displayMazeBoard();
-        System.out.println("done");
     }
 
     public void displayLeftBoard(){

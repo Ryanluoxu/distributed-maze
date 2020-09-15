@@ -21,7 +21,7 @@ public class Tracker implements TrackerRemote {
 
         try {
             Tracker tracker = new Tracker();
-            TrackerRemote stub = (TrackerRemote) UnicastRemoteObject.exportObject(tracker, port);
+            TrackerRemote stub = (TrackerRemote) UnicastRemoteObject.exportObject(tracker, 0);
             Registry registry = LocateRegistry.getRegistry();
             registry.bind(REMOTE_REF, stub);
 

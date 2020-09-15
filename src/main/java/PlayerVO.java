@@ -1,4 +1,5 @@
-public class PlayerVO {
+import java.io.Serializable;
+public class PlayerVO implements Serializable{
     private String ip;
     private Integer port;
     private GameRemote gameRemoteObj;

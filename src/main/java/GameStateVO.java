@@ -1,8 +1,9 @@
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.io.Serializable;
 
-public class GameStateVO {
+public class GameStateVO implements Serializable{
     private List<PlayerVO> playerList;
     private MazeVO maze;
     private Integer N;
@@ -25,14 +26,16 @@ public class GameStateVO {
         for(int i=0; i<K; i++){
             placeCells("*");
         }
+
+        placeCells(playerList.get(0).getPlayerId());
     }
 
 
-    static class MazeVO {
+    static class MazeVO implements Serializable{
         CellVO[][] cells;
     }
 
-    static class CellVO {
+    static class CellVO implements Serializable{
         int x;
         int y;
         boolean hasTreasure;
@@ -152,9 +155,8 @@ public class GameStateVO {
                 System.out.println("Player " + player.getPlayerId() + " unknown move " + move);
                 break;
         }
-
         // Update player's position
-        if (maze.cells[x][y].playerId!="") {
+        if (maze.cells[x][y].playerId.length()>0) {
             System.out.println("Player " + player.getPlayerId() + " invalid move. Result: unmoved.");
         }
         else if (maze.cells[x][y].hasTreasure==false) {

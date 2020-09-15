@@ -4,11 +4,12 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
+import java.util.Arrays;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class Game implements GameRemote {
+public class Game implements GameRemote{
 
     private static final String REMOTE_REF_TRACKER = "tracker";
     private static String host;
@@ -17,7 +18,7 @@ public class Game implements GameRemote {
     private static GameStateVO gameState;
     private static TrackerRemote trackerRemoteObj;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception{
 
         readArgs(args);
         trackerRemoteObj = getTrackerRemoteObj();
@@ -27,7 +28,6 @@ public class Game implements GameRemote {
             GameRemote gameRemoteObj = (GameRemote) UnicastRemoteObject.exportObject(game, 0);
             GameInfoReqDTO gameInfoReq = new GameInfoReqDTO(host, port, gameRemoteObj, playerId);
             GameInfoResDTO gameInfoRes = trackerRemoteObj.getGameInfo(gameInfoReq);
-
             if (gameInfoRes.getPlayerList().size() == 1) {  // 1st player -> pServer: init game
                 initGame(gameInfoRes.getN(), gameInfoRes.getK(), gameInfoRes.getPlayerList());
             } else {    // joinGame
@@ -41,9 +41,28 @@ public class Game implements GameRemote {
 
         // todo player move -- LW
         // special case: bServer fail to call pServer.move
-
+        LocalScanner scanner = new LocalScanner();
+        Maze maze = new Maze(playerId);
+        maze.refreshBoard(gameState);
+        String[] inst = {"1", "2", "3", "4"};
+        while(true){
+            String token = scanner.nextToken();
+            if(token.equalsIgnoreCase("9")){
+                MoveReqDTO moveReqDTO = new MoveReqDTO(playerId, Integer.parseInt(token));
+                sendMoveRequest(gameState.getPlayerList(), moveReqDTO);
+                maze.dispose();
+                break;
+            }
+            else if(Arrays.asList(inst).contains(token)){
+                MoveReqDTO moveReqDTO = new MoveReqDTO(playerId, Integer.parseInt(token));
+                sendMoveRequest(gameState.getPlayerList(), moveReqDTO);
+            }
+            else{
+                continue;
+            }
+            maze.refreshBoard(gameState);
+        }
         doScheduledPing();
-
     }
 
     private static void sendMoveRequest(List<PlayerVO> playerList, MoveReqDTO moveReqDTO) {
@@ -52,6 +71,7 @@ public class Game implements GameRemote {
                 gameState = playerList.get(i).getGameRemoteObj().move(moveReqDTO);
                 break;
             } catch (Exception ex) {
+                System.out.println(ex);
                 continue;
             }
         }
@@ -181,7 +201,6 @@ public class Game implements GameRemote {
     public GameStateVO move(MoveReqDTO moveRequest) throws RemoteException {
         Integer move = moveRequest.getKeyboardInput();
         String playerId = moveRequest.getPlayerId();
-
         // the player exits the game on its own initiative
         // todo synchronized
         if (move == 9) {
@@ -209,7 +228,7 @@ public class Game implements GameRemote {
             System.err.println("Player " + playerId + " unknown move " + move);
             return gameState;
         }
-
+        
         for (PlayerVO player : gameState.getPlayerList()) {
             if (player.getPlayerId().equalsIgnoreCase(playerId)) {
                 player.getGameRemoteObj().updateGameState(gameState);

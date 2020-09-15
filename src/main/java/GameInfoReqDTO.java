@@ -1,4 +1,6 @@
-public class GameInfoReqDTO {
+import java.io.Serializable;
+public class GameInfoReqDTO implements Serializable{
+    
     private String ip;
     private Integer port;
     private GameRemote gameRemoteObj;
