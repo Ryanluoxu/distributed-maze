@@ -17,6 +17,7 @@ public class Game implements GameRemote{
     private static String playerId;
     private static GameStateVO gameState;
     private static TrackerRemote trackerRemoteObj;
+    private static PlayerVO player;
 
     public static void main(String[] args) throws Exception{
 
@@ -28,6 +29,7 @@ public class Game implements GameRemote{
             GameRemote gameRemoteObj = (GameRemote) UnicastRemoteObject.exportObject(game, 0);
             GameInfoReqDTO gameInfoReq = new GameInfoReqDTO(host, port, gameRemoteObj, playerId);
             GameInfoResDTO gameInfoRes = trackerRemoteObj.getGameInfo(gameInfoReq);
+            player = new PlayerVO(host, port, gameRemoteObj, playerId, 0);
             if (!gameInfoRes.isValidPlayerId()){
                 System.err.println("playerId aleady exists");
                 System.exit(0);
@@ -36,15 +38,13 @@ public class Game implements GameRemote{
                 initGame(gameInfoRes.getN(), gameInfoRes.getK(), gameInfoRes.getPlayerList());
             } else {    // joinGame
                 // todo call joinGame one by one - LX
-                PlayerVO player = new PlayerVO(host, port, gameRemoteObj, playerId, 0);
                 joinGame(gameInfoRes.getPlayerList(), player);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        // todo player move -- LW
-        // special case: bServer fail to call pServer.move
+        // player move: done -- LW
         LocalScanner scanner = new LocalScanner();
         Maze maze = new Maze(playerId);
         maze.refreshBoard(gameState);
@@ -54,6 +54,7 @@ public class Game implements GameRemote{
             if(token.equalsIgnoreCase("9")){
                 MoveReqDTO moveReqDTO = new MoveReqDTO(playerId, Integer.parseInt(token));
                 sendMoveRequest(gameState.getPlayerList(), moveReqDTO);
+                trackerRemoteObj.removePlayer(player);
                 maze.dispose();
                 break;
             }
