@@ -28,6 +28,10 @@ public class Game implements GameRemote{
             GameRemote gameRemoteObj = (GameRemote) UnicastRemoteObject.exportObject(game, 0);
             GameInfoReqDTO gameInfoReq = new GameInfoReqDTO(host, port, gameRemoteObj, playerId);
             GameInfoResDTO gameInfoRes = trackerRemoteObj.getGameInfo(gameInfoReq);
+            if (!gameInfoRes.isValidPlayerId()){
+                System.err.println("playerId aleady exists");
+                System.exit(0);
+            }
             if (gameInfoRes.getPlayerList().size() == 1) {  // 1st player -> pServer: init game
                 initGame(gameInfoRes.getN(), gameInfoRes.getK(), gameInfoRes.getPlayerList());
             } else {    // joinGame
