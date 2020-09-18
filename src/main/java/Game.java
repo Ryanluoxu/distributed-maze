@@ -1,3 +1,6 @@
+import com.sun.org.slf4j.internal.Logger;
+import com.sun.org.slf4j.internal.LoggerFactory;
+
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -18,6 +21,7 @@ public class Game implements GameRemote{
     private static GameStateVO gameState;
     private static TrackerRemote trackerRemoteObj;
     private static PlayerVO player;
+    private static final Logger LOG = LoggerFactory.getLogger(Game.class);
 
     public static void main(String[] args) throws Exception{
 
@@ -31,17 +35,21 @@ public class Game implements GameRemote{
             GameInfoResDTO gameInfoRes = trackerRemoteObj.getGameInfo(gameInfoReq);
             player = new PlayerVO(host, port, gameRemoteObj, playerId, 0);
             if (!gameInfoRes.isValidPlayerId()){
-                System.err.println("playerId aleady exists");
+                LOG.error("playerId already exists");
+//                System.err.println("playerId already exists");
                 System.exit(0);
             }
             if (gameInfoRes.getPlayerList().size() == 1) {  // 1st player -> pServer: init game
                 initGame(gameInfoRes.getN(), gameInfoRes.getK(), gameInfoRes.getPlayerList());
+                LOG.debug("1st player->pServer: init the game");
             } else {    // joinGame
                 // todo call joinGame one by one - LX
                 joinGame(gameInfoRes.getPlayerList(), player);
+                LOG.debug("player {}: join the game", player.getPlayerId());
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error(e.getMessage(), e);
+//            e.printStackTrace();
         }
 
         // player move: done -- LW
@@ -56,11 +64,13 @@ public class Game implements GameRemote{
                 sendMoveRequest(gameState.getPlayerList(), moveReqDTO);
                 trackerRemoteObj.removePlayer(player);
                 maze.dispose();
+                LOG.debug("player {} exit successfully", player);
                 break;
             }
             else if(Arrays.asList(inst).contains(token)){
                 MoveReqDTO moveReqDTO = new MoveReqDTO(playerId, Integer.parseInt(token));
                 sendMoveRequest(gameState.getPlayerList(), moveReqDTO);
+                LOG.debug("player {} move {} successfully", player, moveReqDTO.getKeyboardInput());
             }
             else{
                 continue;
@@ -74,9 +84,11 @@ public class Game implements GameRemote{
         for(int i =0; i<playerList.size(); i++) {
             try {
                 gameState = playerList.get(i).getGameRemoteObj().move(moveReqDTO);
+                LOG.debug("player {}: move {}", playerList.get(i).getPlayerId(), moveReqDTO.getKeyboardInput());
                 break;
             } catch (Exception ex) {
-                System.out.println(ex);
+                LOG.error(ex.getMessage(),ex);
+//                System.out.println(ex);
                 continue;
             }
         }
@@ -89,9 +101,11 @@ public class Game implements GameRemote{
         while (true) {
             try {
                 gameState = playerList.get(0).getGameRemoteObj().joinGame(player);
+                LOG.debug("game state set after player {} join game", player);
                 break;
             } catch (Exception ex) {
                 playerList.remove(0);
+                LOG.error(ex.getMessage(),ex);
             }
         }
     }
@@ -104,7 +118,8 @@ public class Game implements GameRemote{
                 try {
                     schedulePing();
                 } catch (RemoteException e) {
-                    e.printStackTrace();
+                    LOG.debug(e.getMessage(),e);
+//                    e.printStackTrace();
                 }
             }
         };
@@ -197,58 +212,83 @@ public class Game implements GameRemote{
 
     /**
      * JH
-     * <p>
+     * @param moveRequest
+     * @return server's game state
+     *
      * The player moves and refreshes its local state.
      * If it is primary server, inform backup server latest game state.
-     * return latest game state to this Game.
+     * return latest game state.
      */
     @Override
     public GameStateVO move(MoveReqDTO moveRequest) throws RemoteException {
         Integer move = moveRequest.getKeyboardInput();
         String playerId = moveRequest.getPlayerId();
-        // the player exits the game on its own initiative
-        // todo synchronized
-        if (move == 9) {
-            System.out.println("Player " + playerId + " quit the game.");
-            for (PlayerVO player : gameState.getPlayerList()) {
-                if (player.getPlayerId().equalsIgnoreCase(playerId)) {
-                    gameState.movePlayer(player, move);
-                    gameState.removePlayer(player);
+
+        // Update server's game state
+        synchronized (gameState) { // sync game state
+
+            // the player exits the game on its own initiative
+            if (move == 9) {
+                LOG.debug("player {} quit the game", playerId);
+//                System.out.println("Player " + playerId + " quit the game.");
+                for (PlayerVO player : gameState.getPlayerList()) {
+                    if (player.getPlayerId().equalsIgnoreCase(playerId)) {
+                        gameState.movePlayer(player, move);
+                        gameState.removePlayer(player);
+                    }
                 }
+                LOG.debug("player {} removed from the game state", playerId);
+
+                //todo: inform bServer & tracker
             }
-        }
-        // the player moves S/N/E/W or remain its position, then refresh its local state
-        else if (move == 0 || move == 1 || move == 2 || move == 3 || move == 4) {
-            for (PlayerVO player : gameState.getPlayerList()) {
-                if (player.getPlayerId().equalsIgnoreCase(playerId)) {
-                    boolean score = gameState.movePlayer(player, move);
-                    if (score == true) {
-                        // todo: add 1 score to player
+
+            // the player moves S/N/E/W or remain its position, then refresh its local state
+            else if (move == 0 || move == 1 || move == 2 || move == 3 || move == 4) {
+                for (PlayerVO player : gameState.getPlayerList()) {
+                    if (player.getPlayerId().equalsIgnoreCase(playerId)) {
+                        boolean score = gameState.movePlayer(player, move);
+                        LOG.debug("player {} move: {}", playerId, move);
+                        if (score == true) { // eat the treasure and get 1 score
+                            player.setScore(player.getScore() + 1);
+                            LOG.debug("player {} get 1 score", playerId);
+                        }
                     }
                 }
             }
-        }
-        // Unknown move
-        else {
-            System.err.println("Player " + playerId + " unknown move " + move);
-            return gameState;
-        }
-        
-        for (PlayerVO player : gameState.getPlayerList()) {
-            if (player.getPlayerId().equalsIgnoreCase(playerId)) {
-                player.getGameRemoteObj().updateGameState(gameState);
+
+            // Unknown move
+            else {
+                LOG.error("player {} unknown move: {}", playerId, move);
+//                System.err.println("Player " + playerId + " unknown move " + move);
+                return gameState;
             }
         }
+        
+//        for (PlayerVO player : gameState.getPlayerList()) {
+//            if (player.getPlayerId().equalsIgnoreCase(playerId)) {
+//                player.getGameRemoteObj().updateGameState(gameState);
+//            }
+//        }
 
         // If player is the primary server, it should inform the backup server update to the latest game state
-        //todo: pserver fails to call bserver.getGameRemoteObj
         if (gameState.getPlayerList().size() > 1) {
-            gameState.getPlayerList().get(1).getGameRemoteObj().updateGameState(gameState);
+            try {
+                gameState.getPlayerList().get(1).getGameRemoteObj().updateGameState(gameState);
+            } catch (RemoteException e) {
+                // pServer fails to call bServer.getGameRemoteObj
+                // since bServer crashed
+                LOG.error(e.getMessage(), e);
+                LOG.debug("detected: bServer crashed");
+                // remove bServer and update to next player (new bServer)
+                PlayerVO bServer = gameState.getPlayerList().get(1);
+                gameState.removePlayer(bServer);
+                LOG.debug("remove player {} (previous bServer)", bServer.getPlayerId());
+                gameState.getPlayerList().get(1).getGameRemoteObj().updateGameState(gameState);
+            }
+            LOG.debug("pServer inform bServer latest game state");
         }
 
         // return latest game state to Game
-        // todo inform bServer and tracker (only for 9)
-
         return gameState;
     }
 
