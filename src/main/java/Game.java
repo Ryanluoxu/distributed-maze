@@ -1,18 +1,18 @@
-import com.sun.org.slf4j.internal.Logger;
-import com.sun.org.slf4j.internal.LoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.List;
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class Game implements GameRemote{
+public class Game implements GameRemote {
 
     private static final String REMOTE_REF_TRACKER = "tracker";
     private static String host;
@@ -23,7 +23,7 @@ public class Game implements GameRemote{
     private static PlayerVO player;
     private static final Logger LOG = LoggerFactory.getLogger(Game.class);
 
-    public static void main(String[] args) throws Exception{
+    public static void main(String[] args) throws Exception {
 
         readArgs(args);
         trackerRemoteObj = getTrackerRemoteObj();
@@ -34,7 +34,7 @@ public class Game implements GameRemote{
             GameInfoReqDTO gameInfoReq = new GameInfoReqDTO(host, port, gameRemoteObj, playerId);
             GameInfoResDTO gameInfoRes = trackerRemoteObj.getGameInfo(gameInfoReq);
             player = new PlayerVO(host, port, gameRemoteObj, playerId, 0);
-            if (!gameInfoRes.isValidPlayerId()){
+            if (!gameInfoRes.isValidPlayerId()) {
                 LOG.error("playerId already exists");
 //                System.err.println("playerId already exists");
                 System.exit(0);
@@ -52,42 +52,41 @@ public class Game implements GameRemote{
 //            e.printStackTrace();
         }
 
+        doScheduledPing();
+
         // player move: done -- LW
         LocalScanner scanner = new LocalScanner();
         Maze maze = new Maze(playerId);
         maze.refreshBoard(gameState);
         String[] inst = {"1", "2", "3", "4"};
-        while(true){
+        while (true) {
             String token = scanner.nextToken();
-            if(token.equalsIgnoreCase("9")){
+            if (token.equalsIgnoreCase("9")) {
                 MoveReqDTO moveReqDTO = new MoveReqDTO(playerId, Integer.parseInt(token));
                 sendMoveRequest(gameState.getPlayerList(), moveReqDTO);
                 trackerRemoteObj.removePlayer(player);
                 maze.dispose();
                 LOG.debug("player {} exit successfully", player);
                 break;
-            }
-            else if(Arrays.asList(inst).contains(token)){
+            } else if (Arrays.asList(inst).contains(token)) {
                 MoveReqDTO moveReqDTO = new MoveReqDTO(playerId, Integer.parseInt(token));
                 sendMoveRequest(gameState.getPlayerList(), moveReqDTO);
                 LOG.debug("player {} move {} successfully", player, moveReqDTO.getKeyboardInput());
-            }
-            else{
+            } else {
                 continue;
             }
             maze.refreshBoard(gameState);
         }
-        doScheduledPing();
     }
 
     private static void sendMoveRequest(List<PlayerVO> playerList, MoveReqDTO moveReqDTO) {
-        for(int i =0; i<playerList.size(); i++) {
+        for (int i = 0; i < playerList.size(); i++) {
             try {
                 gameState = playerList.get(i).getGameRemoteObj().move(moveReqDTO);
                 LOG.debug("player {}: move {}", playerList.get(i).getPlayerId(), moveReqDTO.getKeyboardInput());
                 break;
             } catch (Exception ex) {
-                LOG.error(ex.getMessage(),ex);
+                LOG.error(ex.getMessage(), ex);
 //                System.out.println(ex);
                 continue;
             }
@@ -105,7 +104,7 @@ public class Game implements GameRemote{
                 break;
             } catch (Exception ex) {
                 playerList.remove(0);
-                LOG.error(ex.getMessage(),ex);
+                LOG.error(ex.getMessage(), ex);
             }
         }
     }
@@ -118,7 +117,7 @@ public class Game implements GameRemote{
                 try {
                     schedulePing();
                 } catch (RemoteException e) {
-                    LOG.debug(e.getMessage(),e);
+                    LOG.debug(e.getMessage(), e);
 //                    e.printStackTrace();
                 }
             }
@@ -133,6 +132,7 @@ public class Game implements GameRemote{
      */
     private static void schedulePing() throws RemoteException {
         if (isPrimaryServer()) {
+//            System.out.println(new Date() + ": scheduled ping....");
             for (int i = 1; i < gameState.getPlayerList().size(); i++) {
                 PlayerVO player = gameState.getPlayerList().get(i);
                 try {
@@ -212,9 +212,10 @@ public class Game implements GameRemote{
 
     /**
      * JH
+     *
      * @param moveRequest
      * @return server's game state
-     *
+     * <p>
      * The player moves and refreshes its local state.
      * If it is primary server, inform backup server latest game state.
      * return latest game state.
@@ -263,7 +264,7 @@ public class Game implements GameRemote{
                 return gameState;
             }
         }
-        
+
 //        for (PlayerVO player : gameState.getPlayerList()) {
 //            if (player.getPlayerId().equalsIgnoreCase(playerId)) {
 //                player.getGameRemoteObj().updateGameState(gameState);
