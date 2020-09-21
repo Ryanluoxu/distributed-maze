@@ -156,7 +156,7 @@ public class GameStateVO implements Serializable{
                 break;
         }
         // Update player's position
-        if (maze.cells[x][y].playerId.length()>0) {
+        if (maze.cells[x][y].playerId.length()>1) {
             System.out.println("Player " + player.getPlayerId() + " invalid move. Result: unmoved.");
         }
         else if (maze.cells[x][y].hasTreasure==false) {
