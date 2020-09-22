@@ -58,7 +58,7 @@ public class Game implements GameRemote {
         LocalScanner scanner = new LocalScanner();
         Maze maze = new Maze(playerId);
         maze.refreshBoard(gameState);
-        String[] inst = {"1", "2", "3", "4"};
+        String[] inst = {"0", "1", "2", "3", "4"};
         while (true) {
             String token = scanner.nextToken();
             if (token.equalsIgnoreCase("9")) {
