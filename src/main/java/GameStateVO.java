@@ -40,37 +40,54 @@ public class GameStateVO implements Serializable {
 
     static class MazeVO implements Serializable {
         CellVO[][] cells;
+
+        @Override
+        public String toString() {
+            return "MazeVO{" +
+                    "cells=" + Arrays.toString(cells) +
+                    '}';
+        }
     }
 
-    static class CellVO implements Serializable{
+    static class CellVO implements Serializable {
         int x;
         int y;
         boolean hasTreasure;
         String playerId;
-        public CellVO(Integer X, Integer Y){
-            hasTreasure=false;
-            playerId="";
+
+        public CellVO(Integer X, Integer Y) {
+            hasTreasure = false;
+            playerId = "";
         }
 
+        @Override
+        public String toString() {
+            return "CellVO{" +
+                    "x=" + x +
+                    ", y=" + y +
+                    ", hasTreasure=" + hasTreasure +
+                    ", playerId='" + playerId + '\'' +
+                    '}';
+        }
     }
 
-    public boolean isTreasure(int x, int y){
+    public boolean isTreasure(int x, int y) {
         return maze.cells[x][y].hasTreasure;
     }
 
-    public String isPlayer(int x, int y){
+    public String isPlayer(int x, int y) {
         return maze.cells[x][y].playerId;
     }
 
-    public Integer getSize(){
+    public Integer getSize() {
         return N;
     }
 
-    public List<PlayerVO> getPlayerList(){
+    public List<PlayerVO> getPlayerList() {
         return playerList;
     }
 
-    public void addPlayer(PlayerVO player){
+    public void addPlayer(PlayerVO player) {
         //添加player并随机安排位置
         playerList.add(player);
         placeCells(player.getPlayerId());
