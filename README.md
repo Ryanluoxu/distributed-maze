@@ -3,6 +3,13 @@ A Peer-to-Peer Distributed Maze Game
 
 
 # Demo
+- mkdir ~/demo
+- download source code, unzip and put them in ~/demo/src
+- cd ~/demo/src
+- javac -d ~/demo Tracker.java Game.java
+- cd ~/demo
+- rmiregistry &
+- 
 
 ## Compile source
 goto .../distributed-maze/src/main/java

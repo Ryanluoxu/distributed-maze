@@ -90,7 +90,7 @@ public class Game implements GameRemote {
         while (true) {
             try {
                 gameState = playerList.get(0).getGameRemoteObj().joinGame(player);
-                System.out.println("join game - gameState: "+ gameState);
+                System.out.println("join game - gameState: " + gameState);
                 break;
             } catch (Exception ex) {
                 playerList.remove(0);
@@ -129,7 +129,9 @@ public class Game implements GameRemote {
                 } catch (Exception ex) {
                     // for both bServer and normal player
                     gameState.removePlayer(player);
-                    gameState.getPlayerList().get(1).getGameRemoteObj().updateGameState(gameState);
+                    if (gameState.getPlayerList().size() > 1) {
+                        gameState.getPlayerList().get(1).getGameRemoteObj().updateGameState(gameState);
+                    }
                     trackerRemoteObj.removePlayer(player);
                 }
             }
@@ -139,7 +141,9 @@ public class Game implements GameRemote {
                 server.getGameRemoteObj().ping();
             } catch (Exception ex) {
                 gameState.removePlayer(server);
-                gameState.getPlayerList().get(1).getGameRemoteObj().updateGameState(gameState);
+                if (gameState.getPlayerList().size() > 1) {
+                    gameState.getPlayerList().get(1).getGameRemoteObj().updateGameState(gameState);
+                }
                 trackerRemoteObj.removePlayer(server);
             }
         }
