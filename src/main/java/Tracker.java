@@ -25,7 +25,7 @@ public class Tracker implements TrackerRemote {
             Registry registry = LocateRegistry.getRegistry();
             registry.bind(REMOTE_REF, stub);
 
-            System.out.println("tracker ready... remote ref: " + REMOTE_REF + " port: " + port + ", N: " + N + ", K: " + K + ".");
+            System.out.println("tracker ready... port: " + port + ", N: " + N + ", K: " + K + ".");
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -33,10 +33,10 @@ public class Tracker implements TrackerRemote {
 
     @Override
     public GameInfoResDTO getGameInfo(GameInfoReqDTO request) throws RemoteException {
-        System.out.println("Tracker getGameInfo - request: " + request);
+        System.out.println("Tracker getGameInfo - playerId: " + request.getPlayerId() + "\n");
         boolean isValid = addPlayer(request);
         GameInfoResDTO response = new GameInfoResDTO(N, K, players, isValid);
-        System.out.println("Tracker getGameInfo - END - response: " + response);
+        System.out.println("Tracker getGameInfo - END - response: " + response + "\n");
         return response;
     }
 
@@ -62,11 +62,11 @@ public class Tracker implements TrackerRemote {
     }
 
     @Override
-    public RemovePlayerResDTO removePlayer(PlayerVO playerVO) throws RemoteException {
+    public void removePlayer(PlayerVO playerVO) throws RemoteException {
+        System.out.println("removePlayer - playerId:" + playerVO.getPlayerId() + "\n");
         synchronized (players) {
             players.removeIf(player -> player.getPlayerId().equalsIgnoreCase(playerVO.getPlayerId()));
         }
-        return null;
     }
 
     /**

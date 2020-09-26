@@ -11,6 +11,6 @@ public interface TrackerRemote extends Remote {
     /**
      * for primary server or backup server to remove left or crashed player
      */
-    RemovePlayerResDTO removePlayer(PlayerVO playerVO) throws RemoteException;
+    void removePlayer(PlayerVO playerVO) throws RemoteException;
 
 }

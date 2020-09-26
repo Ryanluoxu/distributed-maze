@@ -1,10 +1,9 @@
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
-import java.io.Serializable;
 
-public class GameStateVO implements Serializable{
+public class GameStateVO implements Serializable {
     private List<PlayerVO> playerList;
     private MazeVO maze;
     private Integer N;
@@ -15,24 +14,23 @@ public class GameStateVO implements Serializable{
     public String toString() {
         return "GameStateVO{" +
                 "playerList=" + playerList +
-                ", maze=" + maze +
                 '}';
     }
 
-    public GameStateVO(Integer n, Integer k, List<PlayerVO> playerList){
-        K=k;
-        N=n;
-        this.playerList=playerList;
+    public GameStateVO(Integer n, Integer k, List<PlayerVO> playerList) {
+        K = k;
+        N = n;
+        this.playerList = playerList;
         maze = new MazeVO();
         maze.cells = new CellVO[n][n];
 
-        for(int i=0;i<n;i++){
-            for(int j=0; j<n;j++){
-                maze.cells[i][j]=new CellVO(i,j);
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                maze.cells[i][j] = new CellVO(i, j);
             }
         }
 
-        for(int i=0; i<K; i++){
+        for (int i = 0; i < K; i++) {
             placeCells("*");
         }
 
@@ -40,7 +38,7 @@ public class GameStateVO implements Serializable{
     }
 
 
-    static class MazeVO implements Serializable{
+    static class MazeVO implements Serializable {
         CellVO[][] cells;
 
         @Override
@@ -51,14 +49,15 @@ public class GameStateVO implements Serializable{
         }
     }
 
-    static class CellVO implements Serializable{
+    static class CellVO implements Serializable {
         int x;
         int y;
         boolean hasTreasure;
         String playerId;
-        public CellVO(Integer X, Integer Y){
-            hasTreasure=false;
-            playerId="";
+
+        public CellVO(Integer X, Integer Y) {
+            hasTreasure = false;
+            playerId = "";
         }
 
         @Override
@@ -72,23 +71,23 @@ public class GameStateVO implements Serializable{
         }
     }
 
-    public boolean isTreasure(int x, int y){
+    public boolean isTreasure(int x, int y) {
         return maze.cells[x][y].hasTreasure;
     }
 
-    public String isPlayer(int x, int y){
+    public String isPlayer(int x, int y) {
         return maze.cells[x][y].playerId;
     }
 
-    public Integer getSize(){
+    public Integer getSize() {
         return N;
     }
 
-    public List<PlayerVO> getPlayerList(){
+    public List<PlayerVO> getPlayerList() {
         return playerList;
     }
 
-    public void addPlayer(PlayerVO player){
+    public void addPlayer(PlayerVO player) {
         //添加player并随机安排位置
         playerList.add(player);
         placeCells(player.getPlayerId());
@@ -103,8 +102,8 @@ public class GameStateVO implements Serializable{
         int y = 0;
 
         // find original position
-        for (int i=0; i<N; i++) {
-            for (int j=0; j<N; j++) {
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < N; j++) {
                 if (maze.cells[i][j].playerId.equalsIgnoreCase(playerId)) {
                     x = i;
                     y = j;
@@ -115,20 +114,20 @@ public class GameStateVO implements Serializable{
         maze.cells[x][y].playerId = "";
         playerList.remove(player);
 
-        System.out.println("player "+playerId+" removed.");
+        System.out.println("player " + playerId + " removed.");
     }
 
-    public void placeCells(String cell){
+    public void placeCells(String cell) {
         //随机放置treasure或者player
         //To do 用户很多的时候优化放置效率
-        while(true){
+        while (true) {
             int x = rand.nextInt(N);
             int y = rand.nextInt(N);
-            if(maze.cells[x][y].hasTreasure==false 
-                & maze.cells[x][y].playerId.equalsIgnoreCase("")){
-                maze.cells[x][y].playerId=cell;
-                if(cell.equalsIgnoreCase("*")){
-                    maze.cells[x][y].hasTreasure=true;
+            if (maze.cells[x][y].hasTreasure == false
+                    & maze.cells[x][y].playerId.equalsIgnoreCase("")) {
+                maze.cells[x][y].playerId = cell;
+                if (cell.equalsIgnoreCase("*")) {
+                    maze.cells[x][y].hasTreasure = true;
                 }
                 break;
             }
@@ -137,11 +136,12 @@ public class GameStateVO implements Serializable{
 
 
     /**
-     *  JH
-     *  move player
-     *    4
-     *   1 3
-     *    2
+     * JH
+     * move player
+     * 4
+     * 1 3
+     * 2
+     *
      * @param player
      */
     public boolean movePlayer(PlayerVO player, int move) {
@@ -150,8 +150,8 @@ public class GameStateVO implements Serializable{
         int y = 0;
 
         // find original position
-        for (int i=0; i<N; i++) {
-            for (int j=0; j<N; j++) {
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < N; j++) {
                 if (maze.cells[i][j].playerId.equalsIgnoreCase(playerId)) {
                     x = i;
                     y = j;
@@ -162,34 +162,32 @@ public class GameStateVO implements Serializable{
         int oldY = y;
 
         // calculate new position
-        switch (move){
+        switch (move) {
             case 0:
                 break;
             case 1:
-                if (x>0) x = x - 1;
+                if (x > 0) x = x - 1;
                 break;
             case 2:
-                if (y<N-1) y = y + 1;
+                if (y < N - 1) y = y + 1;
                 break;
             case 3:
-                if (x<N-1) x = x + 1;
+                if (x < N - 1) x = x + 1;
                 break;
             case 4:
-                if (y>0) y = y - 1;
+                if (y > 0) y = y - 1;
                 break;
             default:
                 System.out.println("Player " + player.getPlayerId() + " unknown move " + move);
                 break;
         }
         // Update player's position
-        if (maze.cells[x][y].playerId.length()>1) {
+        if (maze.cells[x][y].playerId.length() > 1) {
             System.out.println("Player " + player.getPlayerId() + " invalid move. Result: unmoved.");
-        }
-        else if (maze.cells[x][y].hasTreasure==false) {
+        } else if (maze.cells[x][y].hasTreasure == false) {
             maze.cells[oldX][oldY].playerId = "";
             maze.cells[x][y].playerId = playerId;
-        }
-        else if (maze.cells[x][y].hasTreasure==true) {
+        } else if (maze.cells[x][y].hasTreasure == true) {
             maze.cells[oldX][oldY].playerId = "";
             maze.cells[x][y].playerId = playerId;
 
@@ -204,8 +202,6 @@ public class GameStateVO implements Serializable{
         return false;
 
     }
-
-
 
 
 }
