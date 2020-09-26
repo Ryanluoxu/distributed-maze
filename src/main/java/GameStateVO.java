@@ -164,16 +164,16 @@ public class GameStateVO implements Serializable {
         switch (move){
             case 0:
                 break;
-            case 1:
+            case 4:
                 if (x>0) x = x - 1;
                 break;
-            case 2:
+            case 3:
                 if (y<N-1) y = y + 1;
                 break;
-            case 3:
+            case 2:
                 if (x<N-1) x = x + 1;
                 break;
-            case 4:
+            case 1:
                 if (y>0) y = y - 1;
                 break;
             default:
