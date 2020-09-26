@@ -217,6 +217,20 @@ public class Game implements GameRemote {
     @Override
     public GameStateVO joinGame(PlayerVO playerVO) throws RemoteException {
         gameState.addPlayer(playerVO);
+        // update bServer
+        if (gameState.getPlayerList().size() > 1) {
+            while (true) {
+                PlayerVO bServer = gameState.getPlayerList().get(1);
+                try {
+                    bServer.getGameRemoteObj().updateGameState(gameState);
+                    break;
+                } catch (Exception ex) {
+                    System.out.println("bServer crash: " + bServer.getPlayerId());
+                    gameState.removePlayer(bServer);
+                    trackerRemoteObj.removePlayer(bServer);
+                }
+            }
+        }
         return gameState;
     }
 
@@ -305,6 +319,7 @@ public class Game implements GameRemote {
 
     @Override
     public void updateGameState(GameStateVO gameState) throws RemoteException {
+        System.out.println("bServer receive updateGameState: " + gameState);
         this.gameState = gameState;
     }
 
