@@ -3,6 +3,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -40,7 +41,7 @@ public class Game implements GameRemote {
             } else {    // joinGame
                 // call joinGame one by one - LX
                 player = new PlayerVO(gameRemoteObj, playerId, 0);
-                joinGame(gameInfoRes.getPlayerList(), player);
+                joinGame(gameInfoRes.getPlayerList(), player, gameInfoRes.getN(), gameInfoRes.getK());
             }
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
@@ -86,15 +87,30 @@ public class Game implements GameRemote {
     /**
      * set gameState
      */
-    private static void joinGame(List<PlayerVO> playerList, PlayerVO player) {
+    private static void joinGame(List<PlayerVO> playerList, PlayerVO player, int N, int K) {
+        List<PlayerVO> crashPlayers = new ArrayList<>();
         while (true) {
+            PlayerVO pServer = playerList.get(0);
+            if (pServer.getPlayerId().equals(playerId)) {
+                System.out.println("pServer: init the game");
+                initGame(N, K, playerList);
+                for (PlayerVO playerVO : crashPlayers) {
+                    try {
+                        trackerRemoteObj.removePlayer(playerVO);
+                    } catch (RemoteException e) {
+                        System.err.println("trackerRemoteObj.removePlayer() fail..");
+                    }
+                }
+                break;
+            }
             try {
-                gameState = playerList.get(0).getGameRemoteObj().joinGame(player);
+                gameState = pServer.getGameRemoteObj().joinGame(player);
                 System.out.println("join game - gameState: " + gameState);
                 break;
             } catch (Exception ex) {
                 playerList.remove(0);
-                System.out.println(ex.getMessage());
+                System.out.println("crashPlayer: " + pServer.getPlayerId());
+                crashPlayers.add(pServer);
             }
         }
     }
@@ -216,6 +232,7 @@ public class Game implements GameRemote {
      */
     @Override
     public GameStateVO move(MoveReqDTO moveRequest) throws RemoteException {
+        System.out.println("move request: " + moveRequest);
         Integer move = moveRequest.getKeyboardInput();
         String playerId = moveRequest.getPlayerId();
 

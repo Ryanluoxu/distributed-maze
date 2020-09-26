@@ -6,10 +6,13 @@ A Peer-to-Peer Distributed Maze Game
 - mkdir ~/demo
 - download source code, unzip and put them in ~/demo/src
 - cd ~/demo/src
-- javac -d ~/demo Tracker.java Game.java
+- javac -d ~/demo Tracker.java Game.java StressTest.java
 - cd ~/demo
 - rmiregistry &
-- 
+- java -classpath ./ -Djava.rmi.server.codebase=file:./ Tracker 2001 15 10
+- new tab
+- cd ~/demo
+- java StressTest 127.0.0.1 2001 "java Game"
 
 ## Compile source
 goto .../distributed-maze/src/main/java

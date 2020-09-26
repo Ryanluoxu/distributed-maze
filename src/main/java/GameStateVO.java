@@ -164,6 +164,7 @@ public class GameStateVO implements Serializable {
         // calculate new position
         switch (move) {
             case 0:
+                System.out.println("Player " + player.getPlayerId() + " no move " + move);
                 break;
             case 1:
                 if (x > 0) x = x - 1;
