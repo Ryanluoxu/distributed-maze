@@ -1,10 +1,9 @@
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
-import java.io.Serializable;
 
-public class GameStateVO implements Serializable{
+public class GameStateVO implements Serializable {
     private List<PlayerVO> playerList;
     private MazeVO maze;
     private Integer N;
@@ -15,24 +14,23 @@ public class GameStateVO implements Serializable{
     public String toString() {
         return "GameStateVO{" +
                 "playerList=" + playerList +
-                ", maze=" + maze +
                 '}';
     }
 
-    public GameStateVO(Integer n, Integer k, List<PlayerVO> playerList){
-        K=k;
-        N=n;
-        this.playerList=playerList;
+    public GameStateVO(Integer n, Integer k, List<PlayerVO> playerList) {
+        K = k;
+        N = n;
+        this.playerList = playerList;
         maze = new MazeVO();
         maze.cells = new CellVO[n][n];
 
-        for(int i=0;i<n;i++){
-            for(int j=0; j<n;j++){
-                maze.cells[i][j]=new CellVO(i,j);
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                maze.cells[i][j] = new CellVO(i, j);
             }
         }
 
-        for(int i=0; i<K; i++){
+        for (int i = 0; i < K; i++) {
             placeCells("*");
         }
 
@@ -40,15 +38,8 @@ public class GameStateVO implements Serializable{
     }
 
 
-    static class MazeVO implements Serializable{
+    static class MazeVO implements Serializable {
         CellVO[][] cells;
-
-        @Override
-        public String toString() {
-            return "MazeVO{" +
-                    "cells=" + Arrays.toString(cells) +
-                    '}';
-        }
     }
 
     static class CellVO implements Serializable{
@@ -61,15 +52,6 @@ public class GameStateVO implements Serializable{
             playerId="";
         }
 
-        @Override
-        public String toString() {
-            return "CellVO{" +
-                    "x=" + x +
-                    ", y=" + y +
-                    ", hasTreasure=" + hasTreasure +
-                    ", playerId='" + playerId + '\'' +
-                    '}';
-        }
     }
 
     public boolean isTreasure(int x, int y){
