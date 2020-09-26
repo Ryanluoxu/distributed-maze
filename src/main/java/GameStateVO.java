@@ -1,3 +1,4 @@
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -9,6 +10,14 @@ public class GameStateVO implements Serializable{
     private Integer N;
     private Integer K;
     private Random rand = new Random();
+
+    @Override
+    public String toString() {
+        return "GameStateVO{" +
+                "playerList=" + playerList +
+                ", maze=" + maze +
+                '}';
+    }
 
     public GameStateVO(Integer n, Integer k, List<PlayerVO> playerList){
         K=k;
@@ -33,6 +42,13 @@ public class GameStateVO implements Serializable{
 
     static class MazeVO implements Serializable{
         CellVO[][] cells;
+
+        @Override
+        public String toString() {
+            return "MazeVO{" +
+                    "cells=" + Arrays.toString(cells) +
+                    '}';
+        }
     }
 
     static class CellVO implements Serializable{
@@ -43,6 +59,16 @@ public class GameStateVO implements Serializable{
         public CellVO(Integer X, Integer Y){
             hasTreasure=false;
             playerId="";
+        }
+
+        @Override
+        public String toString() {
+            return "CellVO{" +
+                    "x=" + x +
+                    ", y=" + y +
+                    ", hasTreasure=" + hasTreasure +
+                    ", playerId='" + playerId + '\'' +
+                    '}';
         }
     }
 

@@ -33,16 +33,19 @@ public class Game implements GameRemote {
             GameRemote gameRemoteObj = (GameRemote) UnicastRemoteObject.exportObject(game, 0);
             GameInfoReqDTO gameInfoReq = new GameInfoReqDTO(gameRemoteObj, playerId);
             GameInfoResDTO gameInfoRes = trackerRemoteObj.getGameInfo(gameInfoReq);
-            player = new PlayerVO(gameRemoteObj, playerId, 0);
+            System.out.println("get gameInfoRes: " + gameInfoRes);
             if (!gameInfoRes.isValid()) {
+                System.out.println("playerId already exists or no vacancy..");
                 LOG.error("playerId already exists or no vacancy..");
                 System.exit(0);
             }
             if (gameInfoRes.getPlayerList().size() == 1) {  // 1st player -> pServer: init game
+                System.out.println("1st player->pServer: init the game");
                 initGame(gameInfoRes.getN(), gameInfoRes.getK(), gameInfoRes.getPlayerList());
                 LOG.debug("1st player->pServer: init the game");
             } else {    // joinGame
                 // call joinGame one by one - LX
+                player = new PlayerVO(gameRemoteObj, playerId, 0);
                 joinGame(gameInfoRes.getPlayerList(), player);
                 LOG.debug("player {}: join the game", player.getPlayerId());
             }
@@ -97,6 +100,7 @@ public class Game implements GameRemote {
         while (true) {
             try {
                 gameState = playerList.get(0).getGameRemoteObj().joinGame(player);
+                System.out.println("join game - gameState: "+ gameState);
                 LOG.debug("game state set after player {} join game", player);
                 break;
             } catch (Exception ex) {
@@ -157,6 +161,7 @@ public class Game implements GameRemote {
         try {
             Registry registry = LocateRegistry.getRegistry(tracker_ip, 0);
             trackerRemoteObj = (TrackerRemote) registry.lookup(REMOTE_REF_TRACKER);
+            System.out.println("get trackerRemoteObj...");
         } catch (RemoteException | NotBoundException ex) {
             System.err.println("readArgs error: " + ex.getMessage());
             System.exit(0);
@@ -294,7 +299,7 @@ public class Game implements GameRemote {
      */
     @Override
     public void ping() throws RemoteException {
-        System.out.println("successful ping -> player:" + playerId);
+//        System.out.println("successful ping -> player:" + playerId);
     }
 
     @Override

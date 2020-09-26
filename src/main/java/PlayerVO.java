@@ -48,8 +48,7 @@ public class PlayerVO implements Serializable {
     @Override
     public String toString() {
         return "PlayerVO{" +
-                "gameRemoteObj=" + gameRemoteObj +
-                ", playerId='" + playerId + '\'' +
+                "playerId='" + playerId + '\'' +
                 ", score=" + score +
                 '}';
     }
