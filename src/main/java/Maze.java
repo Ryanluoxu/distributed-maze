@@ -24,7 +24,7 @@ public class Maze extends JFrame{
         init();
         this.setTitle(localPlayerId);
         this.add(panel);
-        this.setPreferredSize(new Dimension(900, 800));
+        this.setPreferredSize(new Dimension(450, 400));
         this.pack(); // 不加pack就只剩标题栏了
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // 用户单击窗口的关闭按钮时程序执行的操作
         this.setVisible(true);

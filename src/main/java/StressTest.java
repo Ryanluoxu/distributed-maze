@@ -59,7 +59,7 @@ public class StressTest {
 		try {
 			String ans = (new Scanner(System.in)).nextLine().toLowerCase();
 			String[] yes = {"1", "y", "yes"};
-			if ( !Arrays.asList(yes).contains(ans) ) {
+			if ( !java.util.Arrays.asList(yes).contains(ans) ) {
 				System.out.println("Please fully debug your code first.");
 				System.exit(0);
 			}
