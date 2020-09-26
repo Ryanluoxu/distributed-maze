@@ -1,29 +1,24 @@
 import java.io.Serializable;
-public class PlayerVO implements Serializable{
-    private String ip;
-    private Integer port;
+
+public class PlayerVO implements Serializable {
     private GameRemote gameRemoteObj;
     private String playerId;
     private int score;
 
-    public PlayerVO(String ip, Integer port, GameRemote gameRemoteObj, String playerId, int score) {
-        this.ip = ip;
-        this.port = port;
+    public PlayerVO(GameRemote gameRemoteObj, String playerId, int score) {
         this.gameRemoteObj = gameRemoteObj;
         this.playerId = playerId;
         this.score = score;
     }
 
     public PlayerVO(GameInfoReqDTO request) {
-        this.ip = request.getIp();
-        this.port = request.getPort();
         this.gameRemoteObj = request.getGameRemoteObj();
         this.playerId = request.getPlayerId();
     }
 
-    public PlayerVO(String playerId, Integer score){
-        this.playerId=playerId;
-        this.score=score;
+    public PlayerVO(String playerId, Integer score) {
+        this.playerId = playerId;
+        this.score = score;
     }
 
     public int getScore() {
@@ -32,22 +27,6 @@ public class PlayerVO implements Serializable{
 
     public void setScore(int score) {
         this.score = score;
-    }
-
-    public String getIp() {
-        return ip;
-    }
-
-    public void setIp(String ip) {
-        this.ip = ip;
-    }
-
-    public Integer getPort() {
-        return port;
-    }
-
-    public void setPort(Integer port) {
-        this.port = port;
     }
 
     public GameRemote getGameRemoteObj() {
@@ -69,9 +48,7 @@ public class PlayerVO implements Serializable{
     @Override
     public String toString() {
         return "PlayerVO{" +
-                "ip='" + ip + '\'' +
-                ", port=" + port +
-                ", gameRemoteObj=" + gameRemoteObj +
+                "gameRemoteObj=" + gameRemoteObj +
                 ", playerId='" + playerId + '\'' +
                 ", score=" + score +
                 '}';

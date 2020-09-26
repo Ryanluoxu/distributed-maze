@@ -15,8 +15,8 @@ import java.util.concurrent.TimeUnit;
 public class Game implements GameRemote {
 
     private static final String REMOTE_REF_TRACKER = "tracker";
-    private static String host;
-    private static int port;
+    private static String tracker_ip;
+    private static int tracker_port;
     private static String playerId;
     private static GameStateVO gameState;
     private static TrackerRemote trackerRemoteObj;
@@ -31,25 +31,23 @@ public class Game implements GameRemote {
         try {
             Game game = new Game();
             GameRemote gameRemoteObj = (GameRemote) UnicastRemoteObject.exportObject(game, 0);
-            GameInfoReqDTO gameInfoReq = new GameInfoReqDTO(host, port, gameRemoteObj, playerId);
+            GameInfoReqDTO gameInfoReq = new GameInfoReqDTO(gameRemoteObj, playerId);
             GameInfoResDTO gameInfoRes = trackerRemoteObj.getGameInfo(gameInfoReq);
-            player = new PlayerVO(host, port, gameRemoteObj, playerId, 0);
-            if (!gameInfoRes.isValidPlayerId()) {
-                LOG.error("playerId already exists");
-//                System.err.println("playerId already exists");
+            player = new PlayerVO(gameRemoteObj, playerId, 0);
+            if (!gameInfoRes.isValid()) {
+                LOG.error("playerId already exists or no vacancy..");
                 System.exit(0);
             }
             if (gameInfoRes.getPlayerList().size() == 1) {  // 1st player -> pServer: init game
                 initGame(gameInfoRes.getN(), gameInfoRes.getK(), gameInfoRes.getPlayerList());
                 LOG.debug("1st player->pServer: init the game");
             } else {    // joinGame
-                // todo call joinGame one by one - LX
+                // call joinGame one by one - LX
                 joinGame(gameInfoRes.getPlayerList(), player);
                 LOG.debug("player {}: join the game", player.getPlayerId());
             }
         } catch (Exception e) {
             LOG.error(e.getMessage(), e);
-//            e.printStackTrace();
         }
 
         doScheduledPing();
@@ -87,7 +85,6 @@ public class Game implements GameRemote {
                 break;
             } catch (Exception ex) {
                 LOG.error(ex.getMessage(), ex);
-//                System.out.println(ex);
                 continue;
             }
         }
@@ -118,7 +115,6 @@ public class Game implements GameRemote {
                     schedulePing();
                 } catch (RemoteException e) {
                     LOG.debug(e.getMessage(), e);
-//                    e.printStackTrace();
                 }
             }
         };
@@ -159,7 +155,7 @@ public class Game implements GameRemote {
     private static TrackerRemote getTrackerRemoteObj() {
         TrackerRemote trackerRemoteObj = null;
         try {
-            Registry registry = LocateRegistry.getRegistry(host, port);
+            Registry registry = LocateRegistry.getRegistry(tracker_ip, 0);
             trackerRemoteObj = (TrackerRemote) registry.lookup(REMOTE_REF_TRACKER);
         } catch (RemoteException | NotBoundException ex) {
             System.err.println("readArgs error: " + ex.getMessage());
@@ -177,8 +173,8 @@ public class Game implements GameRemote {
     private static void readArgs(String[] args) {
         if (args != null && args.length == 3) {
             try {
-                host = args[0];
-                port = Integer.parseInt(args[1]);
+                tracker_ip = args[0];
+                tracker_port = Integer.parseInt(args[1]);
                 playerId = args[2];
                 if (playerId.length() != 2) {
                     exitGame(args);
@@ -298,7 +294,7 @@ public class Game implements GameRemote {
      */
     @Override
     public void ping() throws RemoteException {
-        System.out.println("successful ping -> player:" + playerId + "@" + host + ":" + port);
+        System.out.println("successful ping -> player:" + playerId);
     }
 
     @Override
@@ -307,7 +303,7 @@ public class Game implements GameRemote {
     }
 
     /**
-     * 通过比对 playerList 和自身的 playerId，判断当前玩家是否是 pServer
+     * compare playerList with playerId, if this is pServer
      */
     private static boolean isPrimaryServer() {
         synchronized (gameState) {
@@ -320,7 +316,7 @@ public class Game implements GameRemote {
     }
 
     /**
-     * 通过比对 playerList 和自身的 playerId，判断当前玩家是否是 bServer
+     * compare playerList with playerId, if this is bServer
      */
     private static boolean isBackupServer() {
         synchronized (gameState) {

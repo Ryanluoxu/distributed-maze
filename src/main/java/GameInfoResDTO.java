@@ -1,15 +1,14 @@
 import java.io.Serializable;
 import java.util.List;
-import java.io.Serializable;
 
-public class GameInfoResDTO implements Serializable{
+public class GameInfoResDTO implements Serializable {
     private Integer N;
     private Integer K;
     private List<PlayerVO> playerList;
-    private boolean isValidPlayerId;
+    private boolean isValid;
 
-    public boolean isValidPlayerId() {
-        return isValidPlayerId;
+    public boolean isValid() {
+        return isValid;
     }
 
     public Integer getN() {
@@ -24,11 +23,11 @@ public class GameInfoResDTO implements Serializable{
         return playerList;
     }
 
-    public GameInfoResDTO(Integer n, Integer k, List<PlayerVO> players, boolean isValidPlayerId) {
+    public GameInfoResDTO(Integer n, Integer k, List<PlayerVO> players, boolean isValid) {
         N = n;
         K = k;
         this.playerList = players;
-        this.isValidPlayerId = isValidPlayerId;
+        this.isValid = isValid;
     }
 
     @Override
@@ -37,7 +36,7 @@ public class GameInfoResDTO implements Serializable{
                 "N=" + N +
                 ", K=" + K +
                 ", players=" + playerList +
-                ", isValidPlayerId=" + isValidPlayerId +
+                ", isValid=" + isValid +
                 '}';
     }
 }

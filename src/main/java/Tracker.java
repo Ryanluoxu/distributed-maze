@@ -21,7 +21,7 @@ public class Tracker implements TrackerRemote {
 
         try {
             Tracker tracker = new Tracker();
-            TrackerRemote stub = (TrackerRemote) UnicastRemoteObject.exportObject(tracker, 0);
+            TrackerRemote stub = (TrackerRemote) UnicastRemoteObject.exportObject(tracker, port);
             Registry registry = LocateRegistry.getRegistry();
             registry.bind(REMOTE_REF, stub);
 
@@ -34,19 +34,24 @@ public class Tracker implements TrackerRemote {
     @Override
     public GameInfoResDTO getGameInfo(GameInfoReqDTO request) throws RemoteException {
         System.out.println("Tracker getGameInfo - request: " + request);
-        boolean isValidPlayerId = addPlayer(request);
-        GameInfoResDTO response = new GameInfoResDTO(N, K, players, isValidPlayerId);
+        boolean isValid = addPlayer(request);
+        GameInfoResDTO response = new GameInfoResDTO(N, K, players, isValid);
         System.out.println("Tracker getGameInfo - END - response: " + response);
         return response;
     }
 
     private boolean addPlayer(GameInfoReqDTO request) {
-        // todo validate number of players
         synchronized (players) {
+            // validate number of players
+            int vacancy = N * N - K - players.size();
+            if (vacancy == 0) {
+                System.out.println("no vacancy..");
+                return false;
+            }
             // playerId exists
             for (PlayerVO playerVO : players) {
                 if (playerVO.getPlayerId().equalsIgnoreCase(request.getPlayerId())) {
-                    System.err.println("playerId already exists: " + request.getPlayerId());
+                    System.out.println("playerId already exists: " + request.getPlayerId());
                     return false;
                 }
             }

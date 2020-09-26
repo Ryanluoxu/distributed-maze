@@ -1,28 +1,17 @@
 import java.io.Serializable;
-public class GameInfoReqDTO implements Serializable{
-    
-    private String ip;
-    private Integer port;
+
+public class GameInfoReqDTO implements Serializable {
+
     private GameRemote gameRemoteObj;
     private String playerId;
 
-    public GameInfoReqDTO(String ip, Integer port, GameRemote gameRemoteObj, String playerId) {
-        this.ip = ip;
-        this.port = port;
+    public GameInfoReqDTO(GameRemote gameRemoteObj, String playerId) {
         this.gameRemoteObj = gameRemoteObj;
         this.playerId = playerId;
     }
 
     public String getPlayerId() {
         return playerId;
-    }
-
-    public String getIp() {
-        return ip;
-    }
-
-    public Integer getPort() {
-        return port;
     }
 
     public GameRemote getGameRemoteObj() {
@@ -32,9 +21,7 @@ public class GameInfoReqDTO implements Serializable{
     @Override
     public String toString() {
         return "GameInfoReqDTO{" +
-                "ip='" + ip + '\'' +
-                ", port=" + port +
-                ", gameRemoteObj=" + gameRemoteObj +
+                "gameRemoteObj=" + gameRemoteObj +
                 ", playerId='" + playerId + '\'' +
                 '}';
     }
