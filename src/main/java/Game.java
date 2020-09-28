@@ -286,18 +286,21 @@ public class Game implements GameRemote {
 
         // If player is the primary server, it should inform the backup server update to the latest game state
         if (gameState.getPlayerList().size() > 1) {
-            try {
-                gameState.getPlayerList().get(1).getGameRemoteObj().updateGameState(gameState);
-            } catch (RemoteException e) {
-                // pServer fails to call bServer.getGameRemoteObj
-                // since bServer crashed
-                // remove bServer and update to next player (new bServer)
-                PlayerVO bServer = gameState.getPlayerList().get(1);
-                gameState.removePlayer(bServer);
-                gameState.getPlayerList().get(1).getGameRemoteObj().updateGameState(gameState);
+            while (true) {
+                try {
+                    //inform bServer latest game state
+                    gameState.getPlayerList().get(1).getGameRemoteObj().updateGameState(gameState);
+                    break;
+                } catch (RemoteException e) {
+                    // pServer fails to call bServer.getGameRemoteObj
+                    // since bServer crashed
+                    // remove bServer and update to next player (new bServer)
+                    System.err.println("pServer fails to call bServer.getGameRemoteObj().");
+                    PlayerVO bServer = gameState.getPlayerList().get(1);
+                    gameState.removePlayer(bServer);
+                }
             }
         }
-
         // return latest game state to Game
         return gameState;
     }
