@@ -177,27 +177,29 @@ public class GameStateVO implements Serializable {
                 if (y>0) y = y - 1;
                 break;
             default:
-                System.out.println("Player " + player.getPlayerId() + " unknown move " + move);
+                System.out.println("Player " + player.getPlayerId() + ": Unknown move " + move);
                 break;
         }
         // Update player's position
-        if (maze.cells[x][y].playerId.length()>1) {
-            System.out.println("Player " + player.getPlayerId() + " invalid move. Result: unmoved.");
-        }
-        else if (maze.cells[x][y].hasTreasure==false) {
-            maze.cells[oldX][oldY].playerId = "";
-            maze.cells[x][y].playerId = playerId;
-        }
-        else if (maze.cells[x][y].hasTreasure==true) {
-            maze.cells[oldX][oldY].playerId = "";
-            maze.cells[x][y].playerId = playerId;
+        if (move==0) {
+            System.out.println("Player " + player.getPlayerId() + ": Refresh");
+        } else {
+            if (maze.cells[x][y].playerId.length() > 1) {
+                System.out.println("Player " + player.getPlayerId() + ": Failed move " + move);
+            } else if (maze.cells[x][y].hasTreasure == false) {
+                maze.cells[oldX][oldY].playerId = "";
+                maze.cells[x][y].playerId = playerId;
+            } else if (maze.cells[x][y].hasTreasure == true) {
+                maze.cells[oldX][oldY].playerId = "";
+                maze.cells[x][y].playerId = playerId;
 
-            // Treasure be eaten
-            maze.cells[x][y].hasTreasure = false;
-            // Place a new treasure
-            placeCells("*");
-            System.out.println("Generated a new treasure randomly.");
-            return true;
+                // Treasure be eaten
+                maze.cells[x][y].hasTreasure = false;
+                // Place a new treasure
+                placeCells("*");
+                System.out.println("New treasure generated");
+                return true;
+            }
         }
 
         return false;

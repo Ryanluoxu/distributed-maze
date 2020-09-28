@@ -260,10 +260,9 @@ public class Game implements GameRemote {
                     if (player.getPlayerId().equalsIgnoreCase(playerId)) {
                         gameState.movePlayer(player, move);
                         gameState.removePlayer(player);
+                        trackerRemoteObj.removePlayer(player); // inform the tracker
                     }
                 }
-
-                //todo: inform bServer & tracker
             }
 
             // the player moves S/N/E/W or remain its position, then refresh its local state
@@ -284,12 +283,6 @@ public class Game implements GameRemote {
                 return gameState;
             }
         }
-
-//        for (PlayerVO player : gameState.getPlayerList()) {
-//            if (player.getPlayerId().equalsIgnoreCase(playerId)) {
-//                player.getGameRemoteObj().updateGameState(gameState);
-//            }
-//        }
 
         // If player is the primary server, it should inform the backup server update to the latest game state
         if (gameState.getPlayerList().size() > 1) {
