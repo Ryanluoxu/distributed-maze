@@ -24,6 +24,8 @@ public class Game implements GameRemote {
 
         readArgs(args);
         trackerRemoteObj = getTrackerRemoteObj();
+        LocalScanner scanner = new LocalScanner();
+        Maze maze = new Maze(playerId);
 
         try {
             Game game = new Game();
@@ -38,10 +40,12 @@ public class Game implements GameRemote {
             if (gameInfoRes.getPlayerList().size() == 1) {  // 1st player -> pServer: init game
                 System.out.println("1st player->pServer: init the game");
                 initGame(gameInfoRes.getN(), gameInfoRes.getK(), gameInfoRes.getPlayerList());
+                maze.refreshBoard(gameState);
             } else {    // joinGame
                 // call joinGame one by one - LX
                 player = new PlayerVO(gameRemoteObj, playerId, 0);
                 joinGame(gameInfoRes.getPlayerList(), player, gameInfoRes.getN(), gameInfoRes.getK());
+                maze.refreshBoard(gameState);
             }
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
@@ -49,10 +53,6 @@ public class Game implements GameRemote {
 
         doScheduledPing();
 
-        // player move: done -- LW
-        LocalScanner scanner = new LocalScanner();
-        Maze maze = new Maze(playerId);
-        maze.refreshBoard(gameState);
         String[] inst = {"0", "1", "2", "3", "4"};
         while (true) {
             String token = scanner.nextToken();
@@ -216,6 +216,7 @@ public class Game implements GameRemote {
      */
     @Override
     public GameStateVO joinGame(PlayerVO playerVO) throws RemoteException {
+        validatePServer();
         gameState.addPlayer(playerVO);
         // update bServer
         if (gameState.getPlayerList().size() > 1) {
@@ -234,6 +235,22 @@ public class Game implements GameRemote {
         return gameState;
     }
 
+    private void validatePServer() {
+        if (isBackupServer()) {
+            System.out.println("bServer receive join/move request..");
+            PlayerVO server = gameState.getPlayerList().get(0);
+            try {
+                gameState.removePlayer(server);
+                if (gameState.getPlayerList().size() > 1) {
+                    gameState.getPlayerList().get(1).getGameRemoteObj().updateGameState(gameState);
+                }
+                trackerRemoteObj.removePlayer(server);
+            } catch (Exception ex) {
+                System.out.println("");
+            }
+        }
+    }
+
     /**
      * JH
      *
@@ -247,6 +264,8 @@ public class Game implements GameRemote {
     @Override
     public GameStateVO move(MoveReqDTO moveRequest) throws RemoteException {
         System.out.println("move request: " + moveRequest);
+        validatePServer();
+
         Integer move = moveRequest.getKeyboardInput();
         String playerId = moveRequest.getPlayerId();
 

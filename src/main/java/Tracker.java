@@ -5,6 +5,12 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * tracker:
+ *  - getGameInfo by providing gameRemoteObj
+ *  - removePlayer
+ * -- LX - done
+ */
 public class Tracker implements TrackerRemote {
 
     /**
