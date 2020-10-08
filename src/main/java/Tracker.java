@@ -7,8 +7,8 @@ import java.util.List;
 
 /**
  * tracker:
- *  - getGameInfo by providing gameRemoteObj
- *  - removePlayer
+ * - getGameInfo by providing gameRemoteObj
+ * - removePlayer
  * -- LX - done
  */
 public class Tracker implements TrackerRemote {
@@ -53,13 +53,6 @@ public class Tracker implements TrackerRemote {
             if (vacancy == 0) {
                 System.out.println("no vacancy..");
                 return false;
-            }
-            // playerId exists
-            for (PlayerVO playerVO : players) {
-                if (playerVO.getPlayerId().equalsIgnoreCase(request.getPlayerId())) {
-                    System.out.println("playerId already exists: " + request.getPlayerId());
-                    return false;
-                }
             }
             PlayerVO newPlayer = new PlayerVO(request);
             players.add(newPlayer);

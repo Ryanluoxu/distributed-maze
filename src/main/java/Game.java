@@ -88,6 +88,7 @@ public class Game implements GameRemote {
      * set gameState
      */
     private static void joinGame(List<PlayerVO> playerList, PlayerVO player, int N, int K) {
+        checkPlayerId(playerList, player);
         List<PlayerVO> crashPlayers = new ArrayList<>();
         while (true) {
             PlayerVO pServer = playerList.get(0);
@@ -115,6 +116,18 @@ public class Game implements GameRemote {
         }
     }
 
+    private static void checkPlayerId(List<PlayerVO> playerList, PlayerVO player) {
+        for (PlayerVO playerVO : playerList) {
+            if (player.getPlayerId().equalsIgnoreCase(playerVO.getPlayerId())) {
+                try {
+                    playerVO.getGameRemoteObj().ping();
+                    System.out.println("found duplicated playerId.. exit game..");
+                    System.exit(0);
+                } catch (Exception exception) {
+                }
+            }
+        }
+    }
 
     private static void doScheduledPing() {
         Runnable pingTask = new Runnable() {
@@ -279,7 +292,6 @@ public class Game implements GameRemote {
                     if (player.getPlayerId().equalsIgnoreCase(playerId)) {
                         gameState.movePlayer(player, move);
                         gameState.removePlayer(player);
-                        trackerRemoteObj.removePlayer(player); // inform the tracker
                     }
                 }
             }
